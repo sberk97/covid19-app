@@ -11,4 +11,5 @@
     <string name="search_country">Search country</string>
     <string name="action_about">About</string>
     <string name="ok">ok</string>
+    <string name="action_search">Search</string>
 </resources>

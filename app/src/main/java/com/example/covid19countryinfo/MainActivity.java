@@ -34,8 +34,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this,
-                        SearchCountry.class);
+                Intent intent = new Intent(MainActivity.this, SearchCountry.class);
                 startActivity(intent);
             }
         });
@@ -56,9 +55,7 @@ public class MainActivity extends AppCompatActivity {
         Linkify.addLinks(s, Linkify.ALL);
         myAlertBuilder.setMessage(s);
         myAlertBuilder.setPositiveButton(R.string.ok, null);
-//        myAlertBuilder.setIcon(R.drawable.donut_circle);
         ((TextView)myAlertBuilder.show().findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
-
     }
 
     @Override
