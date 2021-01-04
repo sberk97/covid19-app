@@ -9,16 +9,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class CountryListAdapter extends
         RecyclerView.Adapter<CountryListAdapter.CountryViewHolder>  {
 
-    private final LinkedList<String> mCountryList;
+    private final ArrayList<String[]> mCountryList;
     private LayoutInflater mInflater;
     private OnCountryListener mOnCountryListener;
 
-    public CountryListAdapter(Context context, LinkedList<String> countryList, OnCountryListener onCountryListener) {
+    public CountryListAdapter(Context context, ArrayList<String[]> countryList, OnCountryListener onCountryListener) {
         mInflater = LayoutInflater.from(context);
         this.mCountryList = countryList;
         this.mOnCountryListener = onCountryListener;
@@ -33,7 +34,7 @@ public class CountryListAdapter extends
 
     @Override
     public void onBindViewHolder(CountryViewHolder holder, int position) {
-        String mCurrent = mCountryList.get(position);
+        String mCurrent = mCountryList.get(position)[0];
         holder.countryItemView.setText(mCurrent);
     }
 
