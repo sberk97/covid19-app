@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
@@ -46,6 +47,7 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
     private FusedLocationProviderClient mFusedLocationClient;
     private MenuItem mSearch;
     private ProgressBar mProgressBar;
+    private SQLiteDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,9 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
         mCountryList = getCountryList();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mProgressBar = (ProgressBar) findViewById(R.id.country_finding);
+
+        DatabaseHelper sqLiteHelper = DatabaseHelper.getInstance(this);
+        mDb = sqLiteHelper.getWritableDatabase();
 
         // Get a handle to the RecyclerView.
         mRecyclerView = findViewById(R.id.recyclerview);
@@ -77,8 +82,9 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
         //mAdapter.notifyDataSetChanged();
     }
 
-    private void saveCountryData(Map<String, Integer> dataMap) {
-
+    private void saveCountryData(Map<String, Integer> dataMap, String countryName) {
+        mDb.execSQL("INSERT INTO recentCountryData VALUES('" + countryName + "','" + dataMap.get("todayCases") +
+                "','" + dataMap.get("todayDeaths") + "','" + dataMap.get("todayRecovered") + "','" + dataMap.get("date") +"');");
     }
 
     private void onDataFetchError() {
@@ -95,7 +101,8 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
                     dataMap.put("todayCases", response.getInt("todayCases"));
                     dataMap.put("todayDeaths", response.getInt("todayDeaths"));
                     dataMap.put("todayRecovered", response.getInt("todayRecovered"));
-                    saveCountryData(dataMap);
+                    dataMap.put("date", response.getInt("updated"));
+                    saveCountryData(dataMap, response.getString("country"));
                     finish();
                 } catch (JSONException e) {
                     e.printStackTrace();
