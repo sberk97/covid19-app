@@ -14,4 +14,9 @@
     <string name="action_search">Search</string>
     <string name="model_clicked_pattern">You clicked on the rank %1$d word: %2$s!</string>
     <string name="action_locate">Locate</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="no_location">No location available</string>
+    <string name="service_not_available">Service not available</string>
+    <string name="invalid_lat_long_used">Invalid latitude or longitude used</string>
+    <string name="no_address_found">Address not found</string>
 </resources>
