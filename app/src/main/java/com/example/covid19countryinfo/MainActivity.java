@@ -62,15 +62,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Appending records to a string buffer
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         while (c.moveToNext()) {
-            buffer.append("Country: " + c.getString(0) + "\n");
-            buffer.append("todayCases: " + c.getInt(1) + "\n");
-            buffer.append("todayDeaths: " + c.getInt(2) + "\n");
-            buffer.append("todayRecovered: " + c.getInt(3) + "\n");
-            buffer.append("date: " + c.getString(4) + "\n\n");
+            buffer.append("Country: ").append(c.getString(0)).append("\n");
+            buffer.append("todayCases: ").append(c.getInt(1)).append("\n");
+            buffer.append("todayDeaths: ").append(c.getInt(2)).append("\n");
+            buffer.append("todayRecovered: ").append(c.getInt(3)).append("\n");
+            buffer.append("date: ").append(c.getString(4)).append("\n\n");
         }
-
+        c.close();
         // Displaying all records
         showMessage("Country data", buffer.toString());
     }

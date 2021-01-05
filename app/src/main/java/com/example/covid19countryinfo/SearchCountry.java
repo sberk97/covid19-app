@@ -87,8 +87,16 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
     }
 
     private void saveCountryData(Map<String, String> dataMap) {
-        mDb.execSQL("INSERT INTO " + DATABASE_TABLE + " VALUES('" + dataMap.get("countryName") + "','" + Integer.parseInt(dataMap.get("todayCases")) +
-                "','" + Integer.parseInt(dataMap.get("todayDeaths")) + "','" + Integer.parseInt(dataMap.get("todayRecovered")) + "','" + dataMap.get("date") +"');");
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO ")
+                .append(DATABASE_TABLE)
+                .append(" VALUES('")
+                .append(dataMap.get("countryName")).append("','")
+                .append(Integer.parseInt(dataMap.get("todayCases"))).append("','")
+                .append(Integer.parseInt(dataMap.get("todayDeaths"))).append("','")
+                .append(Integer.parseInt(dataMap.get("todayRecovered"))).append("','")
+                .append(dataMap.get("date")).append("');");
+        mDb.execSQL(sb.toString());
     }
 
     private void onDataFetchError() {
