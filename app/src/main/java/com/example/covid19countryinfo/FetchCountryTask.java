@@ -14,9 +14,9 @@ import java.util.Locale;
 public class FetchCountryTask extends AsyncTask<Location, Void, String> {
     private final String TAG = FetchCountryTask.class.getSimpleName();
     private Context mContext;
-    private OnTaskCompleted mListener;
+    private OnCountryFetchCompleted mListener;
 
-    FetchCountryTask(Context applicationContext, OnTaskCompleted listener) {
+    FetchCountryTask(Context applicationContext, OnCountryFetchCompleted listener) {
         mContext = applicationContext;
         mListener = listener;
     }
@@ -53,11 +53,11 @@ public class FetchCountryTask extends AsyncTask<Location, Void, String> {
 
     @Override
     protected void onPostExecute(String address) {
-        mListener.onTaskCompleted(address);
+        mListener.onCountryFetchCompleted(address);
         super.onPostExecute(address);
     }
 
-    interface OnTaskCompleted {
-        void onTaskCompleted(String result);
+    interface OnCountryFetchCompleted {
+        void onCountryFetchCompleted(String result);
     }
 }

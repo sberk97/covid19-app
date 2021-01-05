@@ -24,7 +24,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchCountry extends AppCompatActivity implements FetchCountryTask.OnTaskCompleted, CountryListAdapter.OnCountryListener {
+public class SearchCountry extends AppCompatActivity implements FetchCountryTask.OnCountryFetchCompleted, CountryListAdapter.OnCountryListener {
 
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
@@ -129,11 +129,10 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
     }
 
     @Override
-    public void onTaskCompleted(String result) {
+    public void onCountryFetchCompleted(String result) {
         mSearch.expandActionView();
         SearchView searchView = (SearchView) mSearch.getActionView();
         searchView.setQuery(result, false);
         searchView.clearFocus();
-
     }
 }
