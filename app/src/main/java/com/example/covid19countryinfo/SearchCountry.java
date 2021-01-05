@@ -31,15 +31,19 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class SearchCountry extends AppCompatActivity implements FetchCountryTask.OnCountryFetchCompleted, CountryListAdapter.OnCountryListener {
 
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private static final String COUNTRY_DATA_API = "https://disease.sh/v3/covid-19/countries/";
+    private static final String DATABASE_TABLE = "latest_country_data";
 
     private List<SearchableCountry> mCountryList = new ArrayList<>();
     private RecyclerView mRecyclerView;
@@ -82,9 +86,9 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
         //mAdapter.notifyDataSetChanged();
     }
 
-    private void saveCountryData(Map<String, Integer> dataMap, String countryName) {
-        mDb.execSQL("INSERT INTO recentCountryData VALUES('" + countryName + "','" + dataMap.get("todayCases") +
-                "','" + dataMap.get("todayDeaths") + "','" + dataMap.get("todayRecovered") + "','" + dataMap.get("date") +"');");
+    private void saveCountryData(Map<String, String> dataMap) {
+        mDb.execSQL("INSERT INTO " + DATABASE_TABLE + " VALUES('" + dataMap.get("countryName") + "','" + Integer.parseInt(dataMap.get("todayCases")) +
+                "','" + Integer.parseInt(dataMap.get("todayDeaths")) + "','" + Integer.parseInt(dataMap.get("todayRecovered")) + "','" + dataMap.get("date") +"');");
     }
 
     private void onDataFetchError() {
@@ -93,16 +97,17 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
 
     public void getDataForGivenCountry(String countryCode) {
         String url = COUNTRY_DATA_API + countryCode;
-        Map<String, Integer> dataMap = new HashMap<>();
+        Map<String, String> dataMap = new HashMap<>();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    dataMap.put("todayCases", response.getInt("todayCases"));
-                    dataMap.put("todayDeaths", response.getInt("todayDeaths"));
-                    dataMap.put("todayRecovered", response.getInt("todayRecovered"));
-                    dataMap.put("date", response.getInt("updated"));
-                    saveCountryData(dataMap, response.getString("country"));
+                    dataMap.put("countryName", response.getString("country"));
+                    dataMap.put("todayCases", response.getString("todayCases"));
+                    dataMap.put("todayDeaths", response.getString("todayDeaths"));
+                    dataMap.put("todayRecovered", response.getString("todayRecovered"));
+                    dataMap.put("date", formatDate(response.getLong("updated")));
+                    saveCountryData(dataMap);
                     finish();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -117,6 +122,11 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
             }
         });
         RequestQueueSingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+    }
+
+    private String formatDate(Long epochTime) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
+        return sdf.format(new Date(epochTime));
     }
 
     @Override

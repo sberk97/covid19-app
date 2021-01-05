@@ -3,6 +3,7 @@ package com.example.covid19countryinfo;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * create custom DatabaseHelper class that extends SQLiteOpenHelper
@@ -11,11 +12,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static com.example.covid19countryinfo.DatabaseHelper mInstance = null;
 
     private static final String DATABASE_NAME = "covid19data";
-    private static final String DATABASE_TABLE = "recentCountryData";
-    private static final int DATABASE_VERSION = 1;
+    private static final String DATABASE_TABLE = "latest_country_data";
+    private static final int DATABASE_VERSION = 4;
 
     final private static String CREATE_DB = "CREATE TABLE IF NOT EXISTS " + DATABASE_TABLE + " " +
-            "(country_name TEXT, today_cases INTEGER, today_deaths INTEGER, today_recovered INTEGER, date INTEGER)";
+            "(country_name TEXT, today_cases INTEGER, today_deaths INTEGER, today_recovered INTEGER, date DATE)";
 
     private Context mCxt;
 
