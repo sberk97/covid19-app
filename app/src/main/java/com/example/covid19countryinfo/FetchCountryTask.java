@@ -6,8 +6,10 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -15,6 +17,7 @@ public class FetchCountryTask extends AsyncTask<Location, Void, String> {
     private final String TAG = FetchCountryTask.class.getSimpleName();
     private Context mContext;
     private OnCountryFetchCompleted mListener;
+    private boolean completedSuccessfully = false;
 
     FetchCountryTask(Context applicationContext, OnCountryFetchCompleted listener) {
         mContext = applicationContext;
@@ -23,14 +26,13 @@ public class FetchCountryTask extends AsyncTask<Location, Void, String> {
 
     @Override
     protected String doInBackground(Location... locations) {
-        Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
+        Geocoder geocoder = new Geocoder(mContext, Locale.UK);
         Location location = locations[0];
-        List<Address> addresses = null;
+        List<Address> addresses = new ArrayList<>();
         String resultMessage = "";
+
         try {
-            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(),
-                    // In this sample, get just a single address
-                    1);
+            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
         } catch (IOException ioException) {
             // Catch network or other I/O problems
             resultMessage = mContext.getString(R.string.service_not_available);
@@ -40,24 +42,24 @@ public class FetchCountryTask extends AsyncTask<Location, Void, String> {
             resultMessage = mContext.getString(R.string.invalid_lat_long_used);
             Log.e(TAG, resultMessage + ". " + "Latitude = " + location.getLatitude() + ", Longitude = " + location.getLongitude(), illegalArgumentException);
         }
-        if (addresses == null || addresses.size() == 0) {
-            if (resultMessage.isEmpty()) {
-                resultMessage = mContext.getString(R.string.no_address_found);
-                Log.e(TAG, resultMessage);
-            }
+
+        if ((addresses == null || addresses.size() == 0) && resultMessage.isEmpty()) {
+            resultMessage = mContext.getString(R.string.no_address_found);
+            Log.e(TAG, resultMessage);
         } else {
             resultMessage = addresses.get(0).getCountryName(); //+ " " + addresses.get(0).getCountryCode();
+            completedSuccessfully = true;
         }
         return resultMessage;
     }
 
     @Override
     protected void onPostExecute(String address) {
-        mListener.onCountryFetchCompleted(address);
+        mListener.onCountryFetchCompleted(address, completedSuccessfully);
         super.onPostExecute(address);
     }
 
     interface OnCountryFetchCompleted {
-        void onCountryFetchCompleted(String result);
+        void onCountryFetchCompleted(String result, boolean completedSuccessfully);
     }
 }

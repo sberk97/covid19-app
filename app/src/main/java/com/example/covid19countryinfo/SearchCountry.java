@@ -14,7 +14,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -33,6 +35,7 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
     private CountryListAdapter mAdapter;
     private FusedLocationProviderClient mFusedLocationClient;
     private MenuItem mSearch;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,7 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
         mCountryList.add(new SearchableCountry("United Kingdom", "UK"));
         mCountryList.add(new SearchableCountry("Poland", "PL"));
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mProgressBar = (ProgressBar) findViewById(R.id.country_finding);
 
         // Get a handle to the RecyclerView.
         mRecyclerView = findViewById(R.id.recyclerview);
@@ -102,9 +106,9 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
                 @Override
                 public void onSuccess(Location location) {
                     if (location != null) {
+                        mProgressBar.setVisibility(View.VISIBLE);
                         // Start the reverse geocode AsyncTask
                         new FetchCountryTask(SearchCountry.this, SearchCountry.this).execute(location);
-    //                                mLocationTextView.setText(getString(R.string.address_text, getString(R.string.loading), System.currentTimeMillis()));
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.no_location, Toast.LENGTH_SHORT).show();
                     }
@@ -129,10 +133,15 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
     }
 
     @Override
-    public void onCountryFetchCompleted(String result) {
-        mSearch.expandActionView();
-        SearchView searchView = (SearchView) mSearch.getActionView();
-        searchView.setQuery(result, false);
-        searchView.clearFocus();
+    public void onCountryFetchCompleted(String result, boolean completedSuccessfully) {
+        mProgressBar.setVisibility(View.INVISIBLE);
+        if(completedSuccessfully) {
+            mSearch.expandActionView();
+            SearchView searchView = (SearchView) mSearch.getActionView();
+            searchView.setQuery(result, false);
+            searchView.clearFocus();
+        } else {
+            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+        }
     }
 }
