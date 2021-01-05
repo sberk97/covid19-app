@@ -21,7 +21,11 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
+    private CountryListAdapter mAdapter;
+    private List<SearchableCountry> countryList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
