@@ -42,8 +42,7 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_country);
 
-        mCountryList.add(new SearchableCountry("United Kingdom", "UK"));
-        mCountryList.add(new SearchableCountry("Poland", "PL"));
+        mCountryList = getCountryList();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mProgressBar = (ProgressBar) findViewById(R.id.country_finding);
 
@@ -143,5 +142,15 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
         } else {
             Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public List<SearchableCountry> getCountryList() {
+        String[] countries = getResources().getStringArray(R.array.countries_array);
+        List<SearchableCountry> countryObjects = new ArrayList<>();
+        for(String country : countries) {
+            int lastComma = country.lastIndexOf(',');
+            countryObjects.add(new SearchableCountry(country.substring(0, lastComma), country.substring(lastComma)));
+        }
+        return countryObjects;
     }
 }
