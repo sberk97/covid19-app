@@ -19,4 +19,5 @@
     <string name="service_not_available">Service not available</string>
     <string name="invalid_lat_long_used">Invalid latitude or longitude used</string>
     <string name="no_address_found">Address not found</string>
+    <string name="data_fetch_error">Getting data failed, please try again in a few minutes</string>
 </resources>
