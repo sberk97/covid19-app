@@ -1,25 +1,38 @@
 package com.example.covid19countryinfo;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Toast;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
-public class SearchCountry extends AppCompatActivity implements CountryListAdapter.OnCountryListener {
+public class SearchCountry extends AppCompatActivity implements FetchCountryTask.OnTaskCompleted, CountryListAdapter.OnCountryListener {
+
+    private static final int REQUEST_LOCATION_PERMISSION = 1;
 
     private List<SearchableCountry> mCountryList = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private CountryListAdapter mAdapter;
+    private FusedLocationProviderClient mFusedLocationClient;
+    private MenuItem mSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +41,7 @@ public class SearchCountry extends AppCompatActivity implements CountryListAdapt
 
         mCountryList.add(new SearchableCountry("United Kingdom", "UK"));
         mCountryList.add(new SearchableCountry("Poland", "PL"));
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Get a handle to the RecyclerView.
         mRecyclerView = findViewById(R.id.recyclerview);
@@ -51,8 +65,8 @@ public class SearchCountry extends AppCompatActivity implements CountryListAdapt
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.search_menu, menu);
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) searchItem.getActionView();
+        mSearch = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) mSearch.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -66,5 +80,60 @@ public class SearchCountry extends AppCompatActivity implements CountryListAdapt
             }
         });
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_locate:
+                getLocation();
+                return true;
+            default:
+                // Do nothing
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void getLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+        } else {
+            mFusedLocationClient.getLastLocation().addOnSuccessListener( new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        // Start the reverse geocode AsyncTask
+                        new FetchCountryTask(SearchCountry.this, SearchCountry.this).execute(location);
+    //                                mLocationTextView.setText(getString(R.string.address_text, getString(R.string.loading), System.currentTimeMillis()));
+                    } else {
+                        Toast.makeText(getApplicationContext(), R.string.no_location, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_LOCATION_PERMISSION:
+                // If the permission is granted, get the location,
+                // otherwise, show a Toast
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getLocation();
+                } else {
+                    Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onTaskCompleted(String result) {
+        mSearch.expandActionView();
+        SearchView searchView = (SearchView) mSearch.getActionView();
+        searchView.setQuery(result, false);
+        searchView.clearFocus();
+
     }
 }
