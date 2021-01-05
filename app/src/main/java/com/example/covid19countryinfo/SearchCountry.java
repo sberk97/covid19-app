@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
@@ -30,15 +31,19 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class SearchCountry extends AppCompatActivity implements FetchCountryTask.OnCountryFetchCompleted, CountryListAdapter.OnCountryListener {
 
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private static final String COUNTRY_DATA_API = "https://disease.sh/v3/covid-19/countries/";
+    private static final String DATABASE_TABLE = "latest_country_data";
 
     private List<SearchableCountry> mCountryList = new ArrayList<>();
     private RecyclerView mRecyclerView;
@@ -46,6 +51,7 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
     private FusedLocationProviderClient mFusedLocationClient;
     private MenuItem mSearch;
     private ProgressBar mProgressBar;
+    private SQLiteDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +61,9 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
         mCountryList = getCountryList();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mProgressBar = (ProgressBar) findViewById(R.id.country_finding);
+
+        DatabaseHelper sqLiteHelper = DatabaseHelper.getInstance(this);
+        mDb = sqLiteHelper.getWritableDatabase();
 
         // Get a handle to the RecyclerView.
         mRecyclerView = findViewById(R.id.recyclerview);
@@ -77,8 +86,17 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
         //mAdapter.notifyDataSetChanged();
     }
 
-    private void saveCountryData(Map<String, Integer> dataMap) {
-
+    private void saveCountryData(Map<String, String> dataMap) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO ")
+                .append(DATABASE_TABLE)
+                .append(" VALUES('")
+                .append(dataMap.get("countryName")).append("','")
+                .append(Integer.parseInt(dataMap.get("todayCases"))).append("','")
+                .append(Integer.parseInt(dataMap.get("todayDeaths"))).append("','")
+                .append(Integer.parseInt(dataMap.get("todayRecovered"))).append("','")
+                .append(dataMap.get("date")).append("');");
+        mDb.execSQL(sb.toString());
     }
 
     private void onDataFetchError() {
@@ -87,14 +105,16 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
 
     public void getDataForGivenCountry(String countryCode) {
         String url = COUNTRY_DATA_API + countryCode;
-        Map<String, Integer> dataMap = new HashMap<>();
+        Map<String, String> dataMap = new HashMap<>();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    dataMap.put("todayCases", response.getInt("todayCases"));
-                    dataMap.put("todayDeaths", response.getInt("todayDeaths"));
-                    dataMap.put("todayRecovered", response.getInt("todayRecovered"));
+                    dataMap.put("countryName", response.getString("country"));
+                    dataMap.put("todayCases", response.getString("todayCases"));
+                    dataMap.put("todayDeaths", response.getString("todayDeaths"));
+                    dataMap.put("todayRecovered", response.getString("todayRecovered"));
+                    dataMap.put("date", formatDate(response.getLong("updated")));
                     saveCountryData(dataMap);
                     finish();
                 } catch (JSONException e) {
@@ -110,6 +130,11 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
             }
         });
         RequestQueueSingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+    }
+
+    private String formatDate(Long epochTime) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
+        return sdf.format(new Date(epochTime));
     }
 
     @Override

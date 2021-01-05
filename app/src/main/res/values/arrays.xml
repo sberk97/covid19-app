@@ -2,14 +2,14 @@
 <resources>
     <string-array name="countries_array">
         <item>Afghanistan,AF</item>
-        <item>Åland Islands,AX</item>
+<!--        <item>Åland Islands,AX</item>-->
         <item>Albania,AL</item>
         <item>Algeria,DZ</item>
-        <item>American Samoa,AS</item>
+<!--        <item>American Samoa,AS</item>-->
         <item>Andorra,AD</item>
         <item>Angola,AO</item>
         <item>Anguilla,AI</item>
-        <item>Antarctica,AQ</item>
+<!--        <item>Antarctica,AQ</item>-->
         <item>Antigua and Barbuda,AG</item>
         <item>Argentina,AR</item>
         <item>Armenia,AM</item>
@@ -31,9 +31,9 @@
         <item>Bonaire, Sint Eustatius and Saba,BQ</item>
         <item>Bosnia and Herzegovina,BA</item>
         <item>Botswana,BW</item>
-        <item>Bouvet Island,BV</item>
+<!--        <item>Bouvet Island,BV</item>-->
         <item>Brazil,BR</item>
-        <item>British Indian Ocean Territory,IO</item>
+<!--        <item>British Indian Ocean Territory,IO</item>-->
         <item>Brunei Darussalam,BN</item>
         <item>Bulgaria,BG</item>
         <item>Burkina Faso,BF</item>
@@ -47,13 +47,13 @@
         <item>Chad,TD</item>
         <item>Chile,CL</item>
         <item>China,CN</item>
-        <item>Christmas Island,CX</item>
-        <item>Cocos (Keeling) Islands,CC</item>
+<!--        <item>Christmas Island,CX</item>-->
+<!--        <item>Cocos (Keeling) Islands,CC</item>-->
         <item>Colombia,CO</item>
         <item>Comoros,KM</item>
         <item>Congo,CG</item>
         <item>Congo, the Democratic Republic of the,CD</item>
-        <item>Cook Islands,CK</item>
+<!--        <item>Cook Islands,CK</item>-->
         <item>Costa Rica,CR</item>
         <item>Côte d\'Ivoire,CI</item>
         <item>Croatia,HR</item>
@@ -79,7 +79,7 @@
         <item>France,FR</item>
         <item>French Guiana,GF</item>
         <item>French Polynesia,PF</item>
-        <item>French Southern Territories,TF</item>
+<!--        <item>French Southern Territories,TF</item>-->
         <item>Gabon,GA</item>
         <item>Gambia,GM</item>
         <item>Georgia,GE</item>
@@ -90,14 +90,14 @@
         <item>Greenland,GL</item>
         <item>Grenada,GD</item>
         <item>Guadeloupe,GP</item>
-        <item>Guam,GU</item>
+<!--        <item>Guam,GU</item>-->
         <item>Guatemala,GT</item>
-        <item>Guernsey,GG</item>
+<!--        <item>Guernsey,GG</item>-->
         <item>Guinea,GN</item>
         <item>Guinea-Bissau,GW</item>
         <item>Guyana,GY</item>
         <item>Haiti,HT</item>
-        <item>Heard Island and McDonald Islands,HM</item>
+<!--        <item>Heard Island and McDonald Islands,HM</item>-->
         <item>Holy See (Vatican City State),VA</item>
         <item>Honduras,HN</item>
         <item>Hong Kong,HK</item>
@@ -117,8 +117,8 @@
         <item>Jordan,JO</item>
         <item>Kazakhstan,KZ</item>
         <item>Kenya,KE</item>
-        <item>Kiribati,KI</item>
-        <item>Korea, Democratic People\'s Republic of,KP</item>
+<!--        <item>Kiribati,KI</item>-->
+<!--        <item>Korea, Democratic People\'s Republic of,KP</item>-->
         <item>Korea, Republic of,KR</item>
         <item>Kuwait,KW</item>
         <item>Kyrgyzstan,KG</item>
@@ -145,7 +145,7 @@
         <item>Mauritius,MU</item>
         <item>Mayotte,YT</item>
         <item>Mexico,MX</item>
-        <item>Micronesia, Federated States of,FM</item>
+<!--        <item>Micronesia, Federated States of,FM</item>-->
         <item>Moldova, Republic of,MD</item>
         <item>Monaco,MC</item>
         <item>Mongolia,MN</item>
@@ -155,7 +155,7 @@
         <item>Mozambique,MZ</item>
         <item>Myanmar,MM</item>
         <item>Namibia,NA</item>
-        <item>Nauru,NR</item>
+<!--        <item>Nauru,NR</item>-->
         <item>Nepal,NP</item>
         <item>Netherlands,NL</item>
         <item>New Caledonia,NC</item>
@@ -163,30 +163,30 @@
         <item>Nicaragua,NI</item>
         <item>Niger,NE</item>
         <item>Nigeria,NG</item>
-        <item>Niue,NU</item>
-        <item>Norfolk Island,NF</item>
-        <item>Northern Mariana Islands,MP</item>
+<!--        <item>Niue,NU</item>-->
+<!--        <item>Norfolk Island,NF</item>-->
+<!--        <item>Northern Mariana Islands,MP</item>-->
         <item>Norway,NO</item>
         <item>Oman,OM</item>
         <item>Pakistan,PK</item>
-        <item>Palau,PW</item>
+<!--        <item>Palau,PW</item>-->
         <item>Palestine, State of,PS</item>
         <item>Panama,PA</item>
         <item>Papua New Guinea,PG</item>
         <item>Paraguay,PY</item>
         <item>Peru,PE</item>
         <item>Philippines,PH</item>
-        <item>Pitcairn,PN</item>
+<!--        <item>Pitcairn,PN</item>-->
         <item>Poland,PL</item>
         <item>Portugal,PT</item>
-        <item>Puerto Rico,PR</item>
+<!--        <item>Puerto Rico,PR</item>-->
         <item>Qatar,QA</item>
         <item>Réunion,RE</item>
         <item>Romania,RO</item>
         <item>Russian Federation,RU</item>
         <item>Rwanda,RW</item>
         <item>Saint Barthélemy,BL</item>
-        <item>Saint Helena, Ascension and Tristan da Cunha,SH</item>
+<!--        <item>Saint Helena, Ascension and Tristan da Cunha,SH</item>-->
         <item>Saint Kitts and Nevis,KN</item>
         <item>Saint Lucia,LC</item>
         <item>Saint Martin (French part),MF</item>
@@ -207,13 +207,13 @@
         <item>Solomon Islands,SB</item>
         <item>Somalia,SO</item>
         <item>South Africa,ZA</item>
-        <item>South Georgia and the South Sandwich Islands,GS</item>
+<!--        <item>South Georgia and the South Sandwich Islands,GS</item>-->
         <item>South Sudan,SS</item>
         <item>Spain,ES</item>
         <item>Sri Lanka,LK</item>
         <item>Sudan,SD</item>
         <item>Suriname,SR</item>
-        <item>Svalbard and Jan Mayen,SJ</item>
+<!--        <item>Svalbard and Jan Mayen,SJ</item>-->
         <item>Swaziland,SZ</item>
         <item>Sweden,SE</item>
         <item>Switzerland,CH</item>
@@ -224,27 +224,27 @@
         <item>Thailand,TH</item>
         <item>Timor-Leste,TL</item>
         <item>Togo,TG</item>
-        <item>Tokelau,TK</item>
-        <item>Tonga,TO</item>
+<!--        <item>Tokelau,TK</item>-->
+<!--        <item>Tonga,TO</item>-->
         <item>Trinidad and Tobago,TT</item>
         <item>Tunisia,TN</item>
         <item>Turkey,TR</item>
-        <item>Turkmenistan,TM</item>
+<!--        <item>Turkmenistan,TM</item>-->
         <item>Turks and Caicos Islands,TC</item>
-        <item>Tuvalu,TV</item>
+<!--        <item>Tuvalu,TV</item>-->
         <item>Uganda,UG</item>
         <item>Ukraine,UA</item>
         <item>United Arab Emirates,AE</item>
         <item>United Kingdom,GB</item>
         <item>United States,US</item>
-        <item>United States Minor Outlying Islands,UM</item>
+<!--        <item>United States Minor Outlying Islands,UM</item>-->
         <item>Uruguay,UY</item>
         <item>Uzbekistan,UZ</item>
         <item>Vanuatu,VU</item>
         <item>Venezuela, Bolivarian Republic of,VE</item>
         <item>Viet Nam,VN</item>
         <item>Virgin Islands, British,VG</item>
-        <item>Virgin Islands, U.S.,VI</item>
+<!--        <item>Virgin Islands, U.S.,VI</item>-->
         <item>Wallis and Futuna,WF</item>
         <item>Western Sahara,EH</item>
         <item>Yemen,YE</item>
