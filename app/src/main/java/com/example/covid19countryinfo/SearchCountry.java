@@ -19,16 +19,26 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SearchCountry extends AppCompatActivity implements FetchCountryTask.OnCountryFetchCompleted, CountryListAdapter.OnCountryListener {
 
     private static final int REQUEST_LOCATION_PERMISSION = 1;
+    private static final String COUNTRY_DATA_API = "https://disease.sh/v3/covid-19/countries/";
 
     private List<SearchableCountry> mCountryList = new ArrayList<>();
     private RecyclerView mRecyclerView;
@@ -59,9 +69,47 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
 
     @Override
     public void onCountryClick(int position) {
-        String element = mCountryList.get(position).getCountryName();
-        mCountryList.set(position, new SearchableCountry(element + " click! ", mCountryList.get(position).getCountryCode()));
-        mAdapter.notifyDataSetChanged();
+        String countryCode = mCountryList.get(position).getCountryCode();
+        getDataForGivenCountry(countryCode);
+        //Toast.makeText(getApplicationContext(), String.valueOf(resp.size()), Toast.LENGTH_SHORT).show();
+
+        //mCountryList.set(position, new SearchableCountry(element + " click! ", mCountryList.get(position).getCountryCode()));
+        //mAdapter.notifyDataSetChanged();
+    }
+
+    private void saveCountryData(Map<String, Integer> dataMap) {
+
+    }
+
+    private void onDataFetchError() {
+        Toast.makeText(getApplicationContext(), R.string.data_fetch_error, Toast.LENGTH_SHORT).show();
+    }
+
+    public void getDataForGivenCountry(String countryCode) {
+        String url = COUNTRY_DATA_API + countryCode;
+        Map<String, Integer> dataMap = new HashMap<>();
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    dataMap.put("todayCases", response.getInt("todayCases"));
+                    dataMap.put("todayDeaths", response.getInt("todayDeaths"));
+                    dataMap.put("todayRecovered", response.getInt("todayRecovered"));
+                    saveCountryData(dataMap);
+                    finish();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    onDataFetchError();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                onDataFetchError();
+            }
+        });
+        RequestQueueSingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
     }
 
     @Override
@@ -134,7 +182,7 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
     @Override
     public void onCountryFetchCompleted(String result, boolean completedSuccessfully) {
         mProgressBar.setVisibility(View.INVISIBLE);
-        if(completedSuccessfully) {
+        if (completedSuccessfully) {
             mSearch.expandActionView();
             SearchView searchView = (SearchView) mSearch.getActionView();
             searchView.setQuery(result, false);
@@ -149,7 +197,7 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
         List<SearchableCountry> countryObjects = new ArrayList<>();
         for(String country : countries) {
             int lastComma = country.lastIndexOf(',');
-            countryObjects.add(new SearchableCountry(country.substring(0, lastComma), country.substring(lastComma)));
+            countryObjects.add(new SearchableCountry(country.substring(0, lastComma), country.substring(lastComma+1)));
         }
         return countryObjects;
     }
