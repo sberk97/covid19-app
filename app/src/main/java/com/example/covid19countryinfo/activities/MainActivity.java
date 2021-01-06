@@ -1,13 +1,14 @@
-package com.example.covid19countryinfo;
+package com.example.covid19countryinfo.activities;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
+import com.example.covid19countryinfo.R;
+import com.example.covid19countryinfo.adapters.CountryListAdapter;
+import com.example.covid19countryinfo.misc.DatabaseHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,7 +22,6 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {

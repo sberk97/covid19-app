@@ -1,4 +1,4 @@
-package com.example.covid19countryinfo;
+package com.example.covid19countryinfo.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.covid19countryinfo.R;
+import com.example.covid19countryinfo.models.SearchableCountry;
 
 import java.util.ArrayList;
 import java.util.List;

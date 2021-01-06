@@ -1,4 +1,4 @@
-package com.example.covid19countryinfo;
+package com.example.covid19countryinfo.misc;
 
 import android.content.Context;
 import android.location.Address;
@@ -6,7 +6,8 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
+
+import com.example.covid19countryinfo.R;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class FetchCountryTask extends AsyncTask<Location, Void, String> {
     private OnCountryFetchCompleted mListener;
     private boolean completedSuccessfully = false;
 
-    FetchCountryTask(Context applicationContext, OnCountryFetchCompleted listener) {
+    public FetchCountryTask(Context applicationContext, OnCountryFetchCompleted listener) {
         mContext = applicationContext;
         mListener = listener;
     }
@@ -59,7 +60,7 @@ public class FetchCountryTask extends AsyncTask<Location, Void, String> {
         super.onPostExecute(address);
     }
 
-    interface OnCountryFetchCompleted {
+    public interface OnCountryFetchCompleted {
         void onCountryFetchCompleted(String result, boolean completedSuccessfully);
     }
 }

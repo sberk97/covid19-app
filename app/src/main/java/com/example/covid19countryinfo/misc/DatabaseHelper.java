@@ -1,21 +1,23 @@
-package com.example.covid19countryinfo;
+package com.example.covid19countryinfo.misc;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.covid19countryinfo.misc.Constants;
+
 /**
  * create custom DatabaseHelper class that extends SQLiteOpenHelper
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static com.example.covid19countryinfo.DatabaseHelper mInstance = null;
+    private static DatabaseHelper mInstance = null;
 
     final private static String CREATE_DB = "CREATE TABLE IF NOT EXISTS " + Constants.DATABASE_TABLE + " " +
             "(country_name TEXT, today_cases INTEGER, today_deaths INTEGER, today_recovered INTEGER, date DATE)";
 
     private Context mCxt;
 
-    public static com.example.covid19countryinfo.DatabaseHelper getInstance(Context ctx) {
+    public static DatabaseHelper getInstance(Context ctx) {
         /**
          * use the application context as suggested by CommonsWare.
          * this will ensure that you dont accidentally leak an Activitys
@@ -23,7 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
          * http://android-developers.blogspot.nl/2009/01/avoiding-memory-leaks.html)
          */
         if (mInstance == null) {
-            mInstance = new com.example.covid19countryinfo.DatabaseHelper(ctx.getApplicationContext());
+            mInstance = new DatabaseHelper(ctx.getApplicationContext());
         }
         return mInstance;
     }
