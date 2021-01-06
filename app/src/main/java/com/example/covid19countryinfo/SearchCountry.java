@@ -41,10 +41,6 @@ import java.util.Map;
 
 public class SearchCountry extends AppCompatActivity implements FetchCountryTask.OnCountryFetchCompleted, CountryListAdapter.OnCountryListener {
 
-    private static final int REQUEST_LOCATION_PERMISSION = 1;
-    private static final String COUNTRY_DATA_API = "https://disease.sh/v3/covid-19/countries/";
-    private static final String DATABASE_TABLE = "latest_country_data";
-
     private List<SearchableCountry> mCountryList = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private CountryListAdapter mAdapter;
@@ -89,7 +85,7 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
     private void saveCountryData(Map<String, String> dataMap) {
         StringBuilder sb = new StringBuilder();
         sb.append("INSERT INTO ")
-                .append(DATABASE_TABLE)
+                .append(Constants.DATABASE_TABLE)
                 .append(" VALUES('")
                 .append(dataMap.get("countryName")).append("','")
                 .append(Integer.parseInt(dataMap.get("todayCases"))).append("','")
@@ -104,7 +100,7 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
     }
 
     public void getDataForGivenCountry(String countryCode) {
-        String url = COUNTRY_DATA_API + countryCode;
+        String url = Constants.COUNTRY_DATA_API + countryCode;
         Map<String, String> dataMap = new HashMap<>();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
@@ -172,7 +168,7 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
 
     private void getLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, Constants.REQUEST_LOCATION_PERMISSION);
         } else {
             mFusedLocationClient.getLastLocation().addOnSuccessListener( new OnSuccessListener<Location>() {
                 @Override
@@ -192,7 +188,7 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case REQUEST_LOCATION_PERMISSION:
+            case Constants.REQUEST_LOCATION_PERMISSION:
                 // If the permission is granted, get the location,
                 // otherwise, show a Toast
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
