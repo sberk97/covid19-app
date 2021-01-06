@@ -27,4 +27,7 @@
     <string name="action_add_country">Add new country</string>
     <string name="empty_list_text">Your list is empty</string>
     <string name="empty_list_add_text">Click the + button to add country</string>
+    <string name="deaths">Deaths:</string>
+    <string name="cases">Cases:</string>
+    <string name="recovered">Recovered:</string>
 </resources>

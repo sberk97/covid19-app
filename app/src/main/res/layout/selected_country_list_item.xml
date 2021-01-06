@@ -1,13 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="6dp">
+    android:layout_marginVertical="4dp"
+    android:accessibilityHeading="false"
+    android:background="@drawable/rounded_item"
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="12dp"
+    android:baselineAligned="false">
 
-    <TextView
-        android:id="@+id/selected_country_name"
-        style="@style/search_country_title" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/selected_country_name"
+            style="@style/selected_country_title" />
+
+        <TextView
+            android:id="@+id/selected_country_last_update"
+            style="@style/selected_country_title" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/selected_country_cases_title"
+            style="@style/selected_country_title"
+            android:text="@string/cases" />
+
+        <TextView
+            android:id="@+id/selected_country_today_cases"
+            style="@style/selected_country_title" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/selected_country_deaths_title"
+            style="@style/selected_country_title"
+            android:text="@string/deaths" />
+
+        <TextView
+            android:id="@+id/selected_country_today_deaths"
+            style="@style/selected_country_title" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/selected_country_recovered_title"
+            style="@style/selected_country_title"
+            android:text="@string/recovered" />
+
+        <TextView
+            android:id="@+id/selected_country_today_recovered"
+            style="@style/selected_country_title" />
+    </LinearLayout>
 
 </LinearLayout>
