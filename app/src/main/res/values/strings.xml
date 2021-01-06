@@ -8,7 +8,7 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="search_country">Search country</string>
+    <string name="search_country">Pick country</string>
     <string name="action_about">About</string>
     <string name="ok">ok</string>
     <string name="action_search">Search</string>
