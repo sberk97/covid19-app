@@ -14,7 +14,10 @@
         android:layout_height="wrap_content"
         android:text="@string/empty_list_text"
         android:gravity="center_horizontal"
-        />
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:drawablePadding="3dp"
+        app:drawableTopCompat="@drawable/ic_corona_virus" />
 
     <TextView
         android:id="@+id/textview_empty_list_add_text"
@@ -22,7 +25,5 @@
         android:layout_height="wrap_content"
         android:text="@string/empty_list_add_text"
         android:gravity="center_horizontal"
-        />
-
-
+        android:textSize="14sp" />
 </LinearLayout>
