@@ -86,6 +86,7 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchCou
 
     @Override
     public void onCountryClick(int position) {
+        mProgressBar.setVisibility(View.VISIBLE);
         String countryName = mCountryList.get(position).getCountryName();
         String countryCode = mCountryList.get(position).getCountryCode();
         getDataForGivenCountry(countryName, countryCode);
@@ -95,18 +96,23 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchCou
         //mAdapter.notifyDataSetChanged();
     }
 
-    private void saveCountryData(Map<String, String> dataMap) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO ")
-                .append(Constants.DATABASE_TABLE)
-                .append(" VALUES('")
-                .append(dataMap.get("countryName").replace("'","''")).append("','")
-                .append(dataMap.get("countryCode")).append("',")
-                .append(Integer.parseInt(dataMap.get("todayCases"))).append(",")
-                .append(Integer.parseInt(dataMap.get("todayDeaths"))).append(",")
-                .append(Integer.parseInt(dataMap.get("todayRecovered"))).append(",'")
-                .append(dataMap.get("date")).append("');");
-        mDb.execSQL(sb.toString());
+    private void saveCountryData(String countryName, String countryCode, JSONObject jsonObject) {
+        try {
+            StringBuilder sb = new StringBuilder();
+            sb.append("INSERT INTO ")
+                    .append(Constants.DATABASE_TABLE)
+                    .append(" VALUES('")
+                    .append(countryName.replace("'", "''")).append("','")
+                    .append(countryCode).append("',")
+                    .append(jsonObject.getString("todayCases")).append(",")
+                    .append(jsonObject.getString("todayDeaths")).append(",")
+                    .append(jsonObject.getString("todayRecovered")).append(",'")
+                    .append(formatDate(jsonObject.getLong("updated"))).append("');");
+            mDb.execSQL(sb.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            onDataFetchError();
+        }
     }
 
     private void onDataFetchError() {
@@ -115,27 +121,21 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchCou
 
     public void getDataForGivenCountry(String countryName, String countryCode) {
         String url = Constants.COUNTRY_DATA_API + countryCode;
-        Map<String, String> dataMap = new HashMap<>();
+//        Map<String, String> dataMap = new HashMap<>();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                try {
-                    dataMap.put("countryName", countryName);
-                    dataMap.put("countryCode", countryCode);
-                    dataMap.put("todayCases", response.getString("todayCases"));
-                    dataMap.put("todayDeaths", response.getString("todayDeaths"));
-                    dataMap.put("todayRecovered", response.getString("todayRecovered"));
-                    dataMap.put("date", formatDate(response.getLong("updated")));
-
-                    saveCountryData(dataMap);
-                    Intent returnIntent = getIntent();
-                    returnIntent.putExtra("addedCountry", countryCode);
-                    setResult(Activity.RESULT_OK, returnIntent);
-                    finish();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    onDataFetchError();
-                }
+//                dataMap.put("countryName", countryName);
+//                dataMap.put("countryCode", countryCode);
+//                dataMap.put("todayCases", response.getString("todayCases"));
+//                dataMap.put("todayDeaths", response.getString("todayDeaths"));
+//                dataMap.put("todayRecovered", response.getString("todayRecovered"));
+//                dataMap.put("date", formatDate(response.getLong("updated")));
+                saveCountryData(countryName, countryCode, response);
+                Intent returnIntent = getIntent();
+                returnIntent.putExtra("addedCountry", countryCode);
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
             }
         }, new Response.ErrorListener() {
             @Override
