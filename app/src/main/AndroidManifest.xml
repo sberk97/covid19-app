@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.SearchCountry"
+        <activity android:name=".activities.SearchCountryActivity"
             android:label="@string/search_country"
             android:parentActivityName=".activities.MainActivity">
             <meta-data

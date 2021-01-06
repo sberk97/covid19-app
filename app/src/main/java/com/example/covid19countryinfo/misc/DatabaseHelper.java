@@ -13,7 +13,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static DatabaseHelper mInstance = null;
 
     final private static String CREATE_DB = "CREATE TABLE IF NOT EXISTS " + Constants.DATABASE_TABLE + " " +
-            "(country_name TEXT, today_cases INTEGER, today_deaths INTEGER, today_recovered INTEGER, date DATE)";
+            "(country_name TEXT, country_code TEXT, today_cases INTEGER, today_deaths INTEGER, today_recovered INTEGER, date DATE)";
 
     private Context mCxt;
 

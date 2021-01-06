@@ -21,4 +21,7 @@
     <string name="no_address_found">Address not found</string>
     <string name="data_fetch_error">Getting data failed, please try again in a few minutes</string>
     <string name="add_country">Add country</string>
+    <string name="author">Author: Sebastian Berk</string>
+    <string name="ub_number">UB Number: 17009930</string>
+    <string name="data_from">"COVID-19 Data from REST API: "</string>
 </resources>
