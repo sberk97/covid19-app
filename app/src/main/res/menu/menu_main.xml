@@ -10,4 +10,10 @@
         android:title="@string/action_about"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_add_country"
+        android:orderInCategory="10"
+        android:title="@string/action_add_country"
+        app:showAsAction="never" />
+
 </menu>

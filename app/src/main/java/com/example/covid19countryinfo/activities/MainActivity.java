@@ -57,9 +57,7 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, SearchCountryActivity.class);
-                intent.putExtra(Constants.EXTRA_SELECTED_COUNTRIES, mSelectedCountryISO.toString());
-                startActivityForResult(intent, Constants.LAUNCH_SECOND_ACTIVITY);
+                goToSearchCountryActivity();
             }
         });
         setUpRecyclerView();
@@ -91,6 +89,12 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
         mRecyclerView.setAdapter(mAdapter);
         // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void goToSearchCountryActivity() {
+        Intent intent = new Intent(MainActivity.this, SearchCountryActivity.class);
+        intent.putExtra(Constants.EXTRA_SELECTED_COUNTRIES, mSelectedCountryISO.toString());
+        startActivityForResult(intent, Constants.LAUNCH_SECOND_ACTIVITY);
     }
 
     private void getSelectedCountries() {
@@ -149,6 +153,9 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
         switch (item.getItemId()) {
             case R.id.action_about:
                 onClickShowAlert();
+                return true;
+            case R.id.action_add_country:
+                goToSearchCountryActivity();
                 return true;
             default:
                 // Do nothing

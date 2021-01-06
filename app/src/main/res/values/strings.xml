@@ -24,4 +24,5 @@
     <string name="author">Author: Sebastian Berk</string>
     <string name="ub_number">UB Number: 17009930</string>
     <string name="data_from">"COVID-19 Data from REST API: "</string>
+    <string name="action_add_country">Add new country</string>
 </resources>
