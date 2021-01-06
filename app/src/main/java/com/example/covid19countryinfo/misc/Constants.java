@@ -13,7 +13,7 @@ public final class Constants {
 
     public static final String DATABASE_TABLE = "latest_country_data";
 
-    public static final int DATABASE_VERSION = 6;
+    public static final int DATABASE_VERSION = 8;
 
     public static final int LAUNCH_SECOND_ACTIVITY = 1;
 
@@ -22,5 +22,7 @@ public final class Constants {
     public static final String GET_ALL_COUNTRIES = "SELECT * FROM " + Constants.DATABASE_TABLE;
 
     public static final String GET_GIVEN_COUNTRY = GET_ALL_COUNTRIES + " WHERE country_code='";
+
+    public static final String EMPTY_LIST_FRAGMENT = "EMPTY_LIST_FRAGMENT";
 
 }

@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import com.example.covid19countryinfo.R;
 import com.example.covid19countryinfo.adapters.SelectedCountryListAdapter;
+import com.example.covid19countryinfo.fragments.EmptyListFragment;
 import com.example.covid19countryinfo.misc.Constants;
 import com.example.covid19countryinfo.misc.DatabaseHelper;
 import com.example.covid19countryinfo.models.SelectedListCountry;
@@ -16,6 +17,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
     private List<SelectedListCountry> mSelectedCountryList = new ArrayList<>();
     private StringBuilder mSelectedCountryISO = new StringBuilder();
     private RecyclerView mRecyclerView;
+    private boolean isEmptyListFragmentDisplayed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +64,48 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
                 goToSearchCountryActivity();
             }
         });
+
         setUpRecyclerView();
+
+        setVisibilityOnScreen();
+    }
+
+    private void setVisibilityOnScreen() {
+        if (mSelectedCountryList.isEmpty()) {
+            mRecyclerView.setVisibility(View.GONE);
+            displayEmptyListFragment();
+        } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            hideEmptyListFragment();
+        }
+    }
+
+    private void displayEmptyListFragment() {
+        EmptyListFragment emptyListFragment = EmptyListFragment.newInstance();
+
+        // Get the FragmentManager and start a transaction.
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        // Add the SimpleFragment.
+        fragmentTransaction.add(R.id.empty_list_fragment, emptyListFragment).addToBackStack(null).commit();
+        // Set boolean flag to indicate fragment is open.
+        isEmptyListFragmentDisplayed = true;
+    }
+
+    private void hideEmptyListFragment() {
+        // Get the FragmentManager.
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        // Check to see if the fragment is already showing.
+        EmptyListFragment emptyListFragment = (EmptyListFragment) fragmentManager.findFragmentById(R.id.empty_list_fragment);
+        if (emptyListFragment != null) {
+            // Create and commit the transaction to remove the fragment.
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.remove(emptyListFragment).commit();
+        }
+
+        // Set boolean flag to indicate fragment is closed.
+        isEmptyListFragmentDisplayed = false;
     }
 
     @Override
@@ -71,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
             if (resultCode == Activity.RESULT_OK){
                 String addedCountry = data.getStringExtra("addedCountry");
                 addNewCountry(addedCountry);
+                setVisibilityOnScreen();
                 mAdapter.notifyDataSetChanged();
             }
 //            if (resultCode == Activity.RESULT_CANCELED) {
@@ -89,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
         mRecyclerView.setAdapter(mAdapter);
         // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
     }
 
     private void goToSearchCountryActivity() {
