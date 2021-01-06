@@ -1,10 +1,10 @@
-package com.example.covid19countryinfo;
+package com.example.covid19countryinfo.models;
 
-public class SearchableCountry {
+public class SearchListCountry {
     private String countryName;
     private String countryCode;
 
-    public SearchableCountry(String countryName, String countryCode) {
+    public SearchListCountry(String countryName, String countryCode) {
         this.countryName = countryName;
         this.countryCode = countryCode;
     }

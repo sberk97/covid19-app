@@ -8,7 +8,7 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="search_country">Search country</string>
+    <string name="search_country">Pick country</string>
     <string name="action_about">About</string>
     <string name="ok">ok</string>
     <string name="action_search">Search</string>
@@ -20,4 +20,9 @@
     <string name="invalid_lat_long_used">Invalid latitude or longitude used</string>
     <string name="no_address_found">Address not found</string>
     <string name="data_fetch_error">Getting data failed, please try again in a few minutes</string>
+    <string name="add_country">Add country</string>
+    <string name="author">Author: Sebastian Berk</string>
+    <string name="ub_number">UB Number: 17009930</string>
+    <string name="data_from">"COVID-19 Data from REST API: "</string>
+    <string name="action_add_country">Add new country</string>
 </resources>

@@ -2,12 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.covid19countryinfo.MainActivity">
+    tools:context="com.example.covid19countryinfo.activities.MainActivity">
 
     <item
         android:id="@+id/action_about"
         android:orderInCategory="100"
         android:title="@string/action_about"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_add_country"
+        android:orderInCategory="10"
+        android:title="@string/action_add_country"
         app:showAsAction="never" />
 
 </menu>

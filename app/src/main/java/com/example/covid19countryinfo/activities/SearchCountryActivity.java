@@ -1,4 +1,4 @@
-package com.example.covid19countryinfo;
+package com.example.covid19countryinfo.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
@@ -24,6 +26,13 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.covid19countryinfo.R;
+import com.example.covid19countryinfo.adapters.SearchCountryListAdapter;
+import com.example.covid19countryinfo.misc.Constants;
+import com.example.covid19countryinfo.misc.DatabaseHelper;
+import com.example.covid19countryinfo.misc.FetchCountryTask;
+import com.example.covid19countryinfo.misc.RequestQueueSingleton;
+import com.example.covid19countryinfo.models.SearchListCountry;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,21 +42,20 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.StringTokenizer;
 
-public class SearchCountry extends AppCompatActivity implements FetchCountryTask.OnCountryFetchCompleted, CountryListAdapter.OnCountryListener {
+public class SearchCountryActivity extends AppCompatActivity implements FetchCountryTask.OnCountryFetchCompleted, SearchCountryListAdapter.OnSearchCountryListener {
 
-    private static final int REQUEST_LOCATION_PERMISSION = 1;
-    private static final String COUNTRY_DATA_API = "https://disease.sh/v3/covid-19/countries/";
-    private static final String DATABASE_TABLE = "latest_country_data";
-
-    private List<SearchableCountry> mCountryList = new ArrayList<>();
+    private List<SearchListCountry> mCountryList = new ArrayList<>();
     private RecyclerView mRecyclerView;
-    private CountryListAdapter mAdapter;
+    private SearchCountryListAdapter mAdapter;
     private FusedLocationProviderClient mFusedLocationClient;
     private MenuItem mSearch;
     private ProgressBar mProgressBar;
@@ -69,7 +77,7 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
         mRecyclerView = findViewById(R.id.recyclerview);
         mRecyclerView.setHasFixedSize(true);
         // Create an adapter and supply the data to be displayed.
-        mAdapter = new CountryListAdapter(this, mCountryList, this);
+        mAdapter = new SearchCountryListAdapter(this, mCountryList, this);
         // Connect the adapter with the RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
         // Give the RecyclerView a default layout manager.
@@ -78,49 +86,56 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
 
     @Override
     public void onCountryClick(int position) {
+        mProgressBar.setVisibility(View.VISIBLE);
+        String countryName = mCountryList.get(position).getCountryName();
         String countryCode = mCountryList.get(position).getCountryCode();
-        getDataForGivenCountry(countryCode);
+        getDataForGivenCountry(countryName, countryCode);
         //Toast.makeText(getApplicationContext(), String.valueOf(resp.size()), Toast.LENGTH_SHORT).show();
 
         //mCountryList.set(position, new SearchableCountry(element + " click! ", mCountryList.get(position).getCountryCode()));
         //mAdapter.notifyDataSetChanged();
     }
 
-    private void saveCountryData(Map<String, String> dataMap) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO ")
-                .append(DATABASE_TABLE)
-                .append(" VALUES('")
-                .append(dataMap.get("countryName")).append("','")
-                .append(Integer.parseInt(dataMap.get("todayCases"))).append("','")
-                .append(Integer.parseInt(dataMap.get("todayDeaths"))).append("','")
-                .append(Integer.parseInt(dataMap.get("todayRecovered"))).append("','")
-                .append(dataMap.get("date")).append("');");
-        mDb.execSQL(sb.toString());
+    private void saveCountryData(String countryName, String countryCode, JSONObject jsonObject) {
+        try {
+            StringBuilder sb = new StringBuilder();
+            sb.append("INSERT INTO ")
+                    .append(Constants.DATABASE_TABLE)
+                    .append(" VALUES('")
+                    .append(countryName.replace("'", "''")).append("','")
+                    .append(countryCode).append("',")
+                    .append(jsonObject.getString("todayCases")).append(",")
+                    .append(jsonObject.getString("todayDeaths")).append(",")
+                    .append(jsonObject.getString("todayRecovered")).append(",'")
+                    .append(formatDate(jsonObject.getLong("updated"))).append("');");
+            mDb.execSQL(sb.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            onDataFetchError();
+        }
     }
 
     private void onDataFetchError() {
         Toast.makeText(getApplicationContext(), R.string.data_fetch_error, Toast.LENGTH_SHORT).show();
     }
 
-    public void getDataForGivenCountry(String countryCode) {
-        String url = COUNTRY_DATA_API + countryCode;
-        Map<String, String> dataMap = new HashMap<>();
+    public void getDataForGivenCountry(String countryName, String countryCode) {
+        String url = Constants.COUNTRY_DATA_API + countryCode;
+//        Map<String, String> dataMap = new HashMap<>();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                try {
-                    dataMap.put("countryName", response.getString("country"));
-                    dataMap.put("todayCases", response.getString("todayCases"));
-                    dataMap.put("todayDeaths", response.getString("todayDeaths"));
-                    dataMap.put("todayRecovered", response.getString("todayRecovered"));
-                    dataMap.put("date", formatDate(response.getLong("updated")));
-                    saveCountryData(dataMap);
-                    finish();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    onDataFetchError();
-                }
+//                dataMap.put("countryName", countryName);
+//                dataMap.put("countryCode", countryCode);
+//                dataMap.put("todayCases", response.getString("todayCases"));
+//                dataMap.put("todayDeaths", response.getString("todayDeaths"));
+//                dataMap.put("todayRecovered", response.getString("todayRecovered"));
+//                dataMap.put("date", formatDate(response.getLong("updated")));
+                saveCountryData(countryName, countryCode, response);
+                Intent returnIntent = getIntent();
+                returnIntent.putExtra("addedCountry", countryCode);
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -172,7 +187,7 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
 
     private void getLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, Constants.REQUEST_LOCATION_PERMISSION);
         } else {
             mFusedLocationClient.getLastLocation().addOnSuccessListener( new OnSuccessListener<Location>() {
                 @Override
@@ -180,7 +195,7 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
                     if (location != null) {
                         mProgressBar.setVisibility(View.VISIBLE);
                         // Start the reverse geocode AsyncTask
-                        new FetchCountryTask(SearchCountry.this, SearchCountry.this).execute(location);
+                        new FetchCountryTask(SearchCountryActivity.this, SearchCountryActivity.this).execute(location);
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.no_location, Toast.LENGTH_SHORT).show();
                     }
@@ -192,7 +207,7 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case REQUEST_LOCATION_PERMISSION:
+            case Constants.REQUEST_LOCATION_PERMISSION:
                 // If the permission is granted, get the location,
                 // otherwise, show a Toast
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -217,12 +232,22 @@ public class SearchCountry extends AppCompatActivity implements FetchCountryTask
         }
     }
 
-    public List<SearchableCountry> getCountryList() {
+    public List<SearchListCountry> getCountryList() {
+        HashSet<String> selectedCountriesCode = new HashSet<>();
+        StringTokenizer st = new StringTokenizer(getIntent().getStringExtra(Constants.EXTRA_SELECTED_COUNTRIES), ",");
+        while(st.hasMoreTokens()) {
+            selectedCountriesCode.add(st.nextToken());
+        }
+
         String[] countries = getResources().getStringArray(R.array.countries_array);
-        List<SearchableCountry> countryObjects = new ArrayList<>();
+        List<SearchListCountry> countryObjects = new ArrayList<>();
         for(String country : countries) {
             int lastComma = country.lastIndexOf(',');
-            countryObjects.add(new SearchableCountry(country.substring(0, lastComma), country.substring(lastComma+1)));
+            String countryName = country.substring(0, lastComma);
+            String countryCode = country.substring(lastComma+1);
+            if (!selectedCountriesCode.contains(countryCode)) {
+                countryObjects.add(new SearchListCountry(countryName, countryCode));
+            }
         }
         return countryObjects;
     }

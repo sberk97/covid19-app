@@ -1,4 +1,4 @@
-package com.example.covid19countryinfo;
+package com.example.covid19countryinfo.misc;
 
 import android.content.Context;
 
