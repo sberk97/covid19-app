@@ -1,6 +1,7 @@
 package com.example.covid19countryinfo.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,8 +37,22 @@ public class SelectedCountryListAdapter extends
 
     @Override
     public void onBindViewHolder(SelectedCountryViewHolder holder, int position) {
-        String mCurrent = mCountryList.get(position).getCountryName();
-        holder.countryItemView.setText(mCurrent);
+        String countryName = mCountryList.get(position).getCountryName();
+        int countryCases = mCountryList.get(position).getTodayCases();
+        int countryDeaths = mCountryList.get(position).getTodayDeaths();
+        int countryRecovered = mCountryList.get(position).getTodayRecovered();
+        String countryLastUpdate = mCountryList.get(position).getLastUpdateDate();
+
+        int commaInCountryName = countryName.indexOf(',');
+        if (commaInCountryName != -1) {
+            countryName = countryName.substring(0, commaInCountryName);
+        }
+
+        holder.countryNameView.setText(countryName);
+        holder.countryCasesView.setText(String.valueOf(countryCases));
+        holder.countryDeathsView.setText(String.valueOf(countryDeaths));
+        holder.countryRecoveredView.setText(String.valueOf(countryRecovered));
+        holder.countryLastUpdateView.setText(countryLastUpdate);
     }
 
     @Override
@@ -46,12 +61,22 @@ public class SelectedCountryListAdapter extends
     }
 
     class SelectedCountryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public final TextView countryItemView;
+        public final TextView countryNameView;
+        public final TextView countryCasesView;
+        public final TextView countryDeathsView;
+        public final TextView countryRecoveredView;
+        public final TextView countryLastUpdateView;
+
         OnSelectedCountryListener OnSelectedCountryListener;
 
         public SelectedCountryViewHolder(View itemView, OnSelectedCountryListener onSelectedCountryListener) {
             super(itemView);
-            countryItemView = itemView.findViewById(R.id.selected_country_name);
+            countryNameView = itemView.findViewById(R.id.selected_country_name);
+            countryCasesView = itemView.findViewById(R.id.selected_country_today_cases);
+            countryDeathsView = itemView.findViewById(R.id.selected_country_today_deaths);
+            countryRecoveredView = itemView.findViewById(R.id.selected_country_today_recovered);
+            countryLastUpdateView = itemView.findViewById(R.id.selected_country_last_update);
+
             this.OnSelectedCountryListener = onSelectedCountryListener;
             itemView.setOnClickListener(this);
         }

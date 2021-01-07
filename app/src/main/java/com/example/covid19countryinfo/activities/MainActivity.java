@@ -17,19 +17,22 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.view.View;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -41,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
 
     private SelectedCountryListAdapter mAdapter;
     private List<SelectedListCountry> mSelectedCountryList = new ArrayList<>();
-    private StringBuilder mSelectedCountryISO = new StringBuilder();
+    private List<String> mSelectedCountryISO = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private boolean isEmptyListFragmentDisplayed = false;
 
@@ -58,12 +61,7 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
         getSelectedCountries();
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                goToSearchCountryActivity();
-            }
-        });
+        fab.setOnClickListener(view -> goToSearchCountryActivity());
 
         setUpRecyclerView();
 
@@ -140,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
 
     private void goToSearchCountryActivity() {
         Intent intent = new Intent(MainActivity.this, SearchCountryActivity.class);
-        intent.putExtra(Constants.EXTRA_SELECTED_COUNTRIES, mSelectedCountryISO.toString());
+        intent.putExtra(Constants.EXTRA_SELECTED_COUNTRIES, getSelectedCountryISOList());
         startActivityForResult(intent, Constants.LAUNCH_SECOND_ACTIVITY);
     }
 
@@ -164,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
             int todayDeaths = c.getInt(3);
             int todayRecovered = c.getInt(4);
             String lastUpdateDate = c.getString(5);
-            mSelectedCountryISO.append(",").append(countryCode);
+            mSelectedCountryISO.add(countryCode);
             mSelectedCountryList.add(new SelectedListCountry(countryName, countryCode, todayCases, todayDeaths, todayRecovered, lastUpdateDate));
         }
         c.close();
@@ -175,12 +173,12 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
         myAlertBuilder.setTitle(R.string.action_about);
         StringBuilder sb = new StringBuilder();
         sb.append(getString(R.string.author))
-        .append("\n")
-        .append(getString(R.string.ub_number))
-        .append("\n")
-        .append(getString(R.string.data_from))
-        .append("\n")
-        .append(Constants.COUNTRY_DATA_API_DOMAIN);
+            .append("\n")
+            .append(getString(R.string.ub_number))
+            .append("\n")
+            .append(getString(R.string.data_from))
+            .append("\n")
+            .append(Constants.COUNTRY_DATA_API_DOMAIN);
         final SpannableString s = new SpannableString(sb.toString()); // msg should have url to enable clicking
         Linkify.addLinks(s, Linkify.ALL);
         myAlertBuilder.setMessage(s);
@@ -205,7 +203,6 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
                 goToSearchCountryActivity();
                 return true;
             default:
-                // Do nothing
         }
         return super.onOptionsItemSelected(item);
     }
@@ -213,5 +210,38 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
     @Override
     public void onCountryClick(int position) {
         // move to country activity
+    }
+
+    public void showSelectedCountryCardSettings(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        popup.getMenuInflater().inflate(R.menu.selected_country_menu, popup.getMenu());
+        popup.setOnMenuItemClickListener(item -> {
+            CardView cView = (CardView) ((ViewGroup) v.getParent()).getParent();
+            int countryClicked = mRecyclerView.getChildAdapterPosition(cView);
+            switch (item.getItemId()) {
+                case R.id.action_remove:
+                    removeSelectedCountry(countryClicked);
+                    return true;
+                default:
+            }
+            return true;
+        });
+        popup.show();
+    }
+
+    private void removeSelectedCountry(int countryClicked) {
+        String countryCode = mSelectedCountryList.get(countryClicked).getCountryCode();
+        mDb.execSQL(Constants.REMOVE_COUNTRY + countryCode + "'");
+        mSelectedCountryList.remove(countryClicked);
+        mSelectedCountryISO.remove(countryCode);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    private String getSelectedCountryISOList() {
+        StringBuilder sb = new StringBuilder();
+        for(SelectedListCountry country : mSelectedCountryList) {
+            sb.append(country.getCountryCode()).append(",");
+        }
+        return sb.toString();
     }
 }
