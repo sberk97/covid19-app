@@ -5,12 +5,21 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center_vertical</item>
         <item name="android:maxLines">1</item>
-        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+        <item name="android:textAppearance">?attr/textAppearanceListItem</item>
     </style>
 
-    <style name="selected_country_title">
+    <style name="selected_country_card_text">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+    </style>
+
+    <style name="selected_country_card_number" parent="selected_country_card_text">
+        <item name="android:layout_marginStart">2dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="selected_country_card_data" parent="selected_country_card_text">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
     </style>
 </resources>

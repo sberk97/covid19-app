@@ -1,76 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginVertical="4dp"
-    android:accessibilityHeading="false"
-    android:background="@drawable/rounded_item"
-    android:paddingHorizontal="8dp"
-    android:paddingVertical="12dp"
-    android:baselineAligned="false">
+    android:layout_margin="4dp"
+    app:cardCornerRadius="6dp"
+    app:cardElevation="6dp">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="15dp">
 
         <TextView
             android:id="@+id/selected_country_name"
-            style="@style/selected_country_title" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/selected_country_last_update_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/last_update"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/selected_country_name" />
 
         <TextView
             android:id="@+id/selected_country_last_update"
-            style="@style/selected_country_title" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@+id/selected_country_last_update_title"
+            app:layout_constraintTop_toTopOf="@+id/selected_country_last_update_title" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/selected_country_no_reports"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/no_reports"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/selected_country_last_update_title" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        <!--Cases-->
 
         <TextView
             android:id="@+id/selected_country_cases_title"
-            style="@style/selected_country_title"
-            android:text="@string/cases" />
+            style="@style/selected_country_card_data"
+            android:layout_marginStart="200dp"
+            android:layout_marginTop="22dp"
+            android:text="@string/cases"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/selected_country_today_cases"
-            style="@style/selected_country_title" />
-    </LinearLayout>
+            style="@style/selected_country_card_number"
+            app:layout_constraintStart_toEndOf="@+id/selected_country_cases_title"
+            app:layout_constraintTop_toTopOf="@+id/selected_country_cases_title" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        <!--Deaths-->
 
         <TextView
             android:id="@+id/selected_country_deaths_title"
-            style="@style/selected_country_title"
-            android:text="@string/deaths" />
+            style="@style/selected_country_card_data"
+            android:text="@string/deaths"
+            app:layout_constraintBottom_toTopOf="@+id/selected_country_recovered_title"
+            app:layout_constraintStart_toStartOf="@+id/selected_country_cases_title"
+            app:layout_constraintTop_toBottomOf="@+id/selected_country_cases_title" />
 
         <TextView
             android:id="@+id/selected_country_today_deaths"
-            style="@style/selected_country_title" />
-    </LinearLayout>
+            style="@style/selected_country_card_number"
+            app:layout_constraintStart_toEndOf="@+id/selected_country_deaths_title"
+            app:layout_constraintTop_toTopOf="@+id/selected_country_deaths_title" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        <!--Recovered-->
 
         <TextView
             android:id="@+id/selected_country_recovered_title"
-            style="@style/selected_country_title"
-            android:text="@string/recovered" />
+            style="@style/selected_country_card_data"
+            android:text="@string/recovered"
+            app:layout_constraintStart_toStartOf="@+id/selected_country_deaths_title"
+            app:layout_constraintTop_toBottomOf="@+id/selected_country_deaths_title" />
 
         <TextView
             android:id="@+id/selected_country_today_recovered"
-            style="@style/selected_country_title" />
-    </LinearLayout>
+            style="@style/selected_country_card_number"
+            app:layout_constraintStart_toEndOf="@+id/selected_country_recovered_title"
+            app:layout_constraintTop_toTopOf="@+id/selected_country_recovered_title" />
 
-</LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
