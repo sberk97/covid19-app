@@ -32,4 +32,6 @@
     <string name="recovered">Recovered: </string>
     <string name="last_update">Last update: </string>
     <string name="no_reports">No data for given date</string>
+    <string name="action_remove">Remove</string>
+    <string name="selected_country_card_settings">Settings</string>
 </resources>

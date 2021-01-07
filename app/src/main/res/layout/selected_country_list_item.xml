@@ -44,18 +44,6 @@
             app:layout_constraintStart_toEndOf="@+id/selected_country_last_update_title"
             app:layout_constraintTop_toTopOf="@+id/selected_country_last_update_title" />
 
-        <TextView
-            android:id="@+id/selected_country_no_reports"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="@string/no_reports"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:textSize="12sp"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/selected_country_last_update_title" />
-
         <!--Cases-->
 
         <TextView
@@ -103,6 +91,16 @@
             style="@style/selected_country_card_number"
             app:layout_constraintStart_toEndOf="@+id/selected_country_recovered_title"
             app:layout_constraintTop_toTopOf="@+id/selected_country_recovered_title" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_more_icon"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/selected_country_card_settings"
+            android:onClick="showSelectedCountryCardSettings"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

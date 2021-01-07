@@ -1,6 +1,7 @@
 package com.example.covid19countryinfo.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,10 +53,6 @@ public class SelectedCountryListAdapter extends
         holder.countryDeathsView.setText(String.valueOf(countryDeaths));
         holder.countryRecoveredView.setText(String.valueOf(countryRecovered));
         holder.countryLastUpdateView.setText(countryLastUpdate);
-
-        if (countryCases == 0 && countryDeaths == 0 && countryRecovered == 0) {
-            holder.countryNoReportView.setVisibility(View.VISIBLE);
-        }
     }
 
     @Override
@@ -69,7 +66,6 @@ public class SelectedCountryListAdapter extends
         public final TextView countryDeathsView;
         public final TextView countryRecoveredView;
         public final TextView countryLastUpdateView;
-        public final TextView countryNoReportView;
 
         OnSelectedCountryListener OnSelectedCountryListener;
 
@@ -80,7 +76,6 @@ public class SelectedCountryListAdapter extends
             countryDeathsView = itemView.findViewById(R.id.selected_country_today_deaths);
             countryRecoveredView = itemView.findViewById(R.id.selected_country_today_recovered);
             countryLastUpdateView = itemView.findViewById(R.id.selected_country_last_update);
-            countryNoReportView = itemView.findViewById(R.id.selected_country_no_reports);
 
             this.OnSelectedCountryListener = onSelectedCountryListener;
             itemView.setOnClickListener(this);

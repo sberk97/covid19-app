@@ -93,60 +93,60 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchCou
         mProgressBar.setVisibility(View.VISIBLE);
         String countryName = mCountryList.get(position).getCountryName();
         String countryCode = mCountryList.get(position).getCountryCode();
-        getDataForGivenCountry(countryName, countryCode);
-        //Toast.makeText(getApplicationContext(), String.valueOf(resp.size()), Toast.LENGTH_SHORT).show();
-
-        //mCountryList.set(position, new SearchableCountry(element + " click! ", mCountryList.get(position).getCountryCode()));
-        //mAdapter.notifyDataSetChanged();
+        getDataForGivenCountry(countryName, countryCode, false);
     }
 
-    private void saveCountryData(String countryName, String countryCode, JSONObject jsonObject) {
-        try {
-            StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO ")
-                    .append(Constants.DATABASE_TABLE)
-                    .append(" VALUES('")
-                    .append(countryName.replace("'", "''")).append("','")
-                    .append(countryCode).append("',")
-                    .append(jsonObject.getString("todayCases")).append(",")
-                    .append(jsonObject.getString("todayDeaths")).append(",")
-                    .append(jsonObject.getString("todayRecovered")).append(",'")
-                    .append(formatDate(jsonObject.getLong("updated"))).append("');");
-            mDb.execSQL(sb.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-            onDataFetchError();
-        }
+    private void saveCountryData(String sql) {
+        mDb.execSQL(sql);
     }
 
     private void onDataFetchError() {
         Toast.makeText(getApplicationContext(), R.string.data_fetch_error, Toast.LENGTH_SHORT).show();
     }
 
-    public void getDataForGivenCountry(String countryName, String countryCode) {
+    public void getDataForGivenCountry(String countryName, String countryCode, boolean getYesterdayData) {
         String url = Constants.COUNTRY_DATA_API + countryCode;
-//        Map<String, String> dataMap = new HashMap<>();
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-//                dataMap.put("countryName", countryName);
-//                dataMap.put("countryCode", countryCode);
-//                dataMap.put("todayCases", response.getString("todayCases"));
-//                dataMap.put("todayDeaths", response.getString("todayDeaths"));
-//                dataMap.put("todayRecovered", response.getString("todayRecovered"));
-//                dataMap.put("date", formatDate(response.getLong("updated")));
-                saveCountryData(countryName, countryCode, response);
+        if(getYesterdayData) {
+            url += "?yesterday=true";
+        }
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
+            try {
+                int todayCases = response.getInt("todayCases");
+                int todayDeaths = response.getInt("todayDeaths");
+                int todayRecovered = response.getInt("todayRecovered");
+                boolean hasNoCases = todayCases==0 && todayDeaths==0 && todayRecovered==0;
+                if (hasNoCases && !getYesterdayData) {
+                    getDataForGivenCountry(countryName, countryCode, true);
+                    return;
+                }
+
+                Long epochDate = response.getLong("updated");
+                if(getYesterdayData && !hasNoCases) {
+                    epochDate -= 86400000;
+                }
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("INSERT INTO ")
+                        .append(Constants.DATABASE_TABLE)
+                        .append(" VALUES('")
+                        .append(countryName.replace("'", "''")).append("','")
+                        .append(countryCode).append("',")
+                        .append(todayCases).append(",")
+                        .append(todayDeaths).append(",")
+                        .append(todayRecovered).append(",'")
+                        .append(formatDate(epochDate)).append("');");
+                saveCountryData(sb.toString());
                 Intent returnIntent = getIntent();
                 returnIntent.putExtra("addedCountry", countryCode);
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
                 onDataFetchError();
             }
+        }, error -> {
+            error.printStackTrace();
+            onDataFetchError();
         });
         RequestQueueSingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
     }
