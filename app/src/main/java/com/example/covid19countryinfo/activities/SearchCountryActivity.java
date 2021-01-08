@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -103,7 +104,7 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
                     return;
                 }
 
-                Long epochDate = response.getLong("updated");
+                long epochDate = response.getLong("updated");
                 if (getYesterdayData && !hasNoCases) {
                     epochDate -= 86400000;
                 }
