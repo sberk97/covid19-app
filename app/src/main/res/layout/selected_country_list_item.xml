@@ -56,7 +56,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/selected_country_today_cases"
+            android:id="@+id/selected_country_latest_cases"
             style="@style/selected_country_card_number"
             app:layout_constraintStart_toEndOf="@+id/selected_country_cases_title"
             app:layout_constraintTop_toTopOf="@+id/selected_country_cases_title" />
@@ -72,7 +72,7 @@
             app:layout_constraintTop_toBottomOf="@+id/selected_country_cases_title" />
 
         <TextView
-            android:id="@+id/selected_country_today_deaths"
+            android:id="@+id/selected_country_latest_deaths"
             style="@style/selected_country_card_number"
             app:layout_constraintStart_toEndOf="@+id/selected_country_deaths_title"
             app:layout_constraintTop_toTopOf="@+id/selected_country_deaths_title" />
@@ -87,7 +87,7 @@
             app:layout_constraintTop_toBottomOf="@+id/selected_country_deaths_title" />
 
         <TextView
-            android:id="@+id/selected_country_today_recovered"
+            android:id="@+id/selected_country_latest_recovered"
             style="@style/selected_country_card_number"
             app:layout_constraintStart_toEndOf="@+id/selected_country_recovered_title"
             app:layout_constraintTop_toTopOf="@+id/selected_country_recovered_title" />
@@ -98,7 +98,7 @@
             android:src="@drawable/ic_more_icon"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/selected_country_card_settings"
-            android:onClick="showSelectedCountryCardSettings"
+            android:onClick="showCountryCardSettings"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 

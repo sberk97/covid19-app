@@ -14,13 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class FetchCountryTask extends AsyncTask<Location, Void, String> {
-    private final String TAG = FetchCountryTask.class.getSimpleName();
+public class FetchLocationTask extends AsyncTask<Location, Void, String> {
+    private final String TAG = FetchLocationTask.class.getSimpleName();
     private Context mContext;
     private OnCountryFetchCompleted mListener;
     private boolean completedSuccessfully = false;
 
-    public FetchCountryTask(Context applicationContext, OnCountryFetchCompleted listener) {
+    public FetchLocationTask(Context applicationContext, OnCountryFetchCompleted listener) {
         mContext = applicationContext;
         mListener = listener;
     }
@@ -56,11 +56,11 @@ public class FetchCountryTask extends AsyncTask<Location, Void, String> {
 
     @Override
     protected void onPostExecute(String address) {
-        mListener.onCountryFetchCompleted(address, completedSuccessfully);
+        mListener.onLocationFetchCompleted(address, completedSuccessfully);
         super.onPostExecute(address);
     }
 
     public interface OnCountryFetchCompleted {
-        void onCountryFetchCompleted(String result, boolean completedSuccessfully);
+        void onLocationFetchCompleted(String result, boolean completedSuccessfully);
     }
 }

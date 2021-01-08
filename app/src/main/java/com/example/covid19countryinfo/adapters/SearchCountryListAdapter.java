@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.covid19countryinfo.R;
-import com.example.covid19countryinfo.models.SearchListCountry;
+import com.example.covid19countryinfo.models.Country;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +20,12 @@ import java.util.List;
 public class SearchCountryListAdapter extends
         RecyclerView.Adapter<SearchCountryListAdapter.SearchCountryViewHolder> implements Filterable {
 
-    private List<SearchListCountry> mCountryList;
-    private List<SearchListCountry> mCountryListFull;
+    private List<Country> mCountryList;
+    private List<Country> mCountryListFull;
     private LayoutInflater mInflater;
     private OnSearchCountryListener mOnSearchCountryListener;
 
-    public SearchCountryListAdapter(Context context, List<SearchListCountry> countryList, OnSearchCountryListener onSearchCountryListener) {
+    public SearchCountryListAdapter(Context context, List<Country> countryList, OnSearchCountryListener onSearchCountryListener) {
         mInflater = LayoutInflater.from(context);
         this.mCountryList = countryList;
         this.mCountryListFull = new ArrayList<>(countryList);
@@ -58,12 +58,12 @@ public class SearchCountryListAdapter extends
     private Filter countryFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            List<SearchListCountry> filteredList = new ArrayList<>();
+            List<Country> filteredList = new ArrayList<>();
             if (constraint == null || constraint.length() == 0) {
                 filteredList.addAll(mCountryListFull);
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
-                for (SearchListCountry item : mCountryListFull) {
+                for (Country item : mCountryListFull) {
                     if (item.getCountryName().toLowerCase().contains(filterPattern)) {
                         filteredList.add(item);
                     }

@@ -1,30 +1,32 @@
 package com.example.covid19countryinfo.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
+import com.android.volley.Request;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.covid19countryinfo.R;
 import com.example.covid19countryinfo.adapters.SelectedCountryListAdapter;
-import com.example.covid19countryinfo.fragments.EmptyListFragment;
 import com.example.covid19countryinfo.misc.Constants;
 import com.example.covid19countryinfo.misc.DatabaseHelper;
-import com.example.covid19countryinfo.models.SelectedListCountry;
+import com.example.covid19countryinfo.misc.Helper;
+import com.example.covid19countryinfo.misc.RequestQueueSingleton;
+import com.example.covid19countryinfo.models.Country;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.SpannableString;
-import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.View;
@@ -34,6 +36,10 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +49,7 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
     private SQLiteDatabase mDb;
 
     private SelectedCountryListAdapter mAdapter;
-    private List<SelectedListCountry> mSelectedCountryList = new ArrayList<>();
-    private List<String> mSelectedCountryISO = new ArrayList<>();
+    private List<Country> mSelectedCountryList = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private boolean isEmptyListFragmentDisplayed = false;
 
@@ -58,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
         DatabaseHelper sqLiteHelper = DatabaseHelper.getInstance(this);
         mDb = sqLiteHelper.getWritableDatabase();
 
-        getSelectedCountries();
+        setUpCountryList();
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> goToSearchCountryActivity());
@@ -71,39 +76,11 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
     private void setVisibilityOnScreen() {
         if (mSelectedCountryList.isEmpty()) {
             mRecyclerView.setVisibility(View.GONE);
-            displayEmptyListFragment();
+            isEmptyListFragmentDisplayed = Helper.displayFragment(getSupportFragmentManager(), R.id.empty_list_fragment);
         } else {
             mRecyclerView.setVisibility(View.VISIBLE);
-            hideEmptyListFragment();
+            isEmptyListFragmentDisplayed = Helper.hideFragment(getSupportFragmentManager(), R.id.empty_list_fragment);
         }
-    }
-
-    private void displayEmptyListFragment() {
-        EmptyListFragment emptyListFragment = EmptyListFragment.newInstance();
-
-        // Get the FragmentManager and start a transaction.
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        // Add the SimpleFragment.
-        fragmentTransaction.add(R.id.empty_list_fragment, emptyListFragment).addToBackStack(null).commit();
-        // Set boolean flag to indicate fragment is open.
-        isEmptyListFragmentDisplayed = true;
-    }
-
-    private void hideEmptyListFragment() {
-        // Get the FragmentManager.
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        // Check to see if the fragment is already showing.
-        EmptyListFragment emptyListFragment = (EmptyListFragment) fragmentManager.findFragmentById(R.id.empty_list_fragment);
-        if (emptyListFragment != null) {
-            // Create and commit the transaction to remove the fragment.
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.remove(emptyListFragment).commit();
-        }
-
-        // Set boolean flag to indicate fragment is closed.
-        isEmptyListFragmentDisplayed = false;
     }
 
     @Override
@@ -111,9 +88,9 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == Constants.LAUNCH_SECOND_ACTIVITY) {
-            if (resultCode == Activity.RESULT_OK){
+            if (resultCode == Activity.RESULT_OK) {
                 String addedCountry = data.getStringExtra("addedCountry");
-                addNewCountry(addedCountry);
+                addCountryToList(addedCountry);
                 setVisibilityOnScreen();
                 mAdapter.notifyDataSetChanged();
             }
@@ -138,52 +115,77 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
 
     private void goToSearchCountryActivity() {
         Intent intent = new Intent(MainActivity.this, SearchCountryActivity.class);
-        intent.putExtra(Constants.EXTRA_SELECTED_COUNTRIES, getSelectedCountryISOList());
+        intent.putExtra(Constants.EXTRA_SELECTED_COUNTRIES, Helper.getCountryCodesString(mSelectedCountryList));
         startActivityForResult(intent, Constants.LAUNCH_SECOND_ACTIVITY);
     }
 
-    private void getSelectedCountries() {
-        fetchCountries(Constants.GET_ALL_COUNTRIES);
+    private void setUpCountryList() {
+        mSelectedCountryList = fetchCountries(Constants.GET_ALL_COUNTRIES);
     }
 
-    private void addNewCountry(String countryCode) {
-        fetchCountries(Constants.GET_GIVEN_COUNTRY + countryCode + "';");
+    private void addCountryToList(String countryCode) {
+        mSelectedCountryList.add(fetchCountries(Constants.GET_GIVEN_COUNTRY + countryCode + "';").get(0));
     }
 
-    private void fetchCountries(String sql) {
-        Cursor c = mDb.rawQuery(sql, null);
-        if(c.getCount() == 0) {
-            return;
+    private void updateCountryInList(String countryCode, int countryListIndex) {
+        String sql = Constants.GET_GIVEN_COUNTRY + countryCode + "';";
+        List<Country> newCountryData = fetchCountries(sql);
+        mSelectedCountryList.set(countryListIndex, newCountryData.get(0));
+    }
+
+    private void removeCountry(int countryClicked) {
+        String countryCode = mSelectedCountryList.get(countryClicked).getCountryCode();
+        try {
+            mDb.execSQL(Constants.REMOVE_COUNTRY + countryCode + "'");
+            mSelectedCountryList.remove(countryClicked);
+            mAdapter.notifyDataSetChanged();
+        } catch (SQLException e) {
+            Toast.makeText(getApplicationContext(), R.string.error_country_remove, Toast.LENGTH_SHORT).show();
         }
-        while (c.moveToNext()) {
-            String countryName = c.getString(0);
-            String countryCode = c.getString(1);
-            int todayCases = c.getInt(2);
-            int todayDeaths = c.getInt(3);
-            int todayRecovered = c.getInt(4);
-            String lastUpdateDate = c.getString(5);
-            mSelectedCountryISO.add(countryCode);
-            mSelectedCountryList.add(new SelectedListCountry(countryName, countryCode, todayCases, todayDeaths, todayRecovered, lastUpdateDate));
-        }
-        c.close();
     }
 
-    public void onClickShowAlert() {
+    private List<Country> fetchCountries(String sql) {
+        List<Country> retrievedCountries = new ArrayList<>();
+        try {
+            Cursor c = mDb.rawQuery(sql, null);
+
+            if (c.getCount() == 0) {
+                return retrievedCountries;
+            }
+
+            while (c.moveToNext()) {
+                String countryName = c.getString(0);
+                String countryCode = c.getString(1);
+                int latestCases = c.getInt(2);
+                int latestDeaths = c.getInt(3);
+                int latestRecovered = c.getInt(4);
+                String lastUpdateDate = c.getString(5);
+                retrievedCountries.add(new Country(countryName, countryCode, latestCases, latestDeaths, latestRecovered, lastUpdateDate));
+            }
+            c.close();
+        } catch (SQLException e) {
+            Toast.makeText(getApplicationContext(), R.string.error_country_retrieve, Toast.LENGTH_SHORT).show();
+        }
+
+        return retrievedCountries;
+    }
+
+    public void onClickShowAbout() {
         AlertDialog.Builder myAlertBuilder = new AlertDialog.Builder(MainActivity.this);
         myAlertBuilder.setTitle(R.string.action_about);
         StringBuilder sb = new StringBuilder();
         sb.append(getString(R.string.author))
-            .append("\n")
-            .append(getString(R.string.ub_number))
-            .append("\n")
-            .append(getString(R.string.data_from))
-            .append("\n")
-            .append(Constants.COUNTRY_DATA_API_DOMAIN);
+                .append("\n")
+                .append(getString(R.string.ub_number))
+                .append("\n")
+                .append(getString(R.string.data_from))
+                .append("\n")
+                .append(Constants.COUNTRY_DATA_API_DOMAIN);
         final SpannableString s = new SpannableString(sb.toString()); // msg should have url to enable clicking
         Linkify.addLinks(s, Linkify.ALL);
         myAlertBuilder.setMessage(s);
         myAlertBuilder.setPositiveButton(R.string.ok, null);
-        ((TextView)myAlertBuilder.show().findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+        ((TextView) myAlertBuilder.show().findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     @Override
@@ -193,16 +195,19 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
         return true;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_about:
-                onClickShowAlert();
+                onClickShowAbout();
                 return true;
             case R.id.action_add_country:
                 goToSearchCountryActivity();
                 return true;
-            default:
+            case R.id.action_update_all:
+                updateAllCountries();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -212,36 +217,132 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
         // move to country activity
     }
 
-    public void showSelectedCountryCardSettings(View v) {
-        PopupMenu popup = new PopupMenu(this, v);
+    public void showCountryCardSettings(View view) {
+        PopupMenu popup = new PopupMenu(this, view);
         popup.getMenuInflater().inflate(R.menu.selected_country_menu, popup.getMenu());
-        popup.setOnMenuItemClickListener(item -> {
-            CardView cView = (CardView) ((ViewGroup) v.getParent()).getParent();
-            int countryClicked = mRecyclerView.getChildAdapterPosition(cView);
-            switch (item.getItemId()) {
-                case R.id.action_remove:
-                    removeSelectedCountry(countryClicked);
-                    return true;
-                default:
-            }
-            return true;
-        });
+        popup.setOnMenuItemClickListener(getOnMenuItemClickListener(view));
         popup.show();
     }
 
-    private void removeSelectedCountry(int countryClicked) {
-        String countryCode = mSelectedCountryList.get(countryClicked).getCountryCode();
-        mDb.execSQL(Constants.REMOVE_COUNTRY + countryCode + "'");
-        mSelectedCountryList.remove(countryClicked);
-        mSelectedCountryISO.remove(countryCode);
-        mAdapter.notifyDataSetChanged();
+    @SuppressLint("NonConstantResourceId")
+    private PopupMenu.OnMenuItemClickListener getOnMenuItemClickListener(View view) {
+        return new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                CardView cView = (CardView) ((ViewGroup) view.getParent()).getParent();
+                int countryClicked = mRecyclerView.getChildAdapterPosition(cView);
+                switch (item.getItemId()) {
+                    case R.id.action_remove:
+                        removeCountry(countryClicked);
+                        return true;
+                    case R.id.action_update_item:
+                        updateGivenCountry(countryClicked);
+                        return true;
+                }
+                return true;
+            }
+        };
     }
 
-    private String getSelectedCountryISOList() {
-        StringBuilder sb = new StringBuilder();
-        for(SelectedListCountry country : mSelectedCountryList) {
-            sb.append(country.getCountryCode()).append(",");
+    private void updateAllCountries() {
+        String countryCodes = Helper.getCountryCodesString(mSelectedCountryList);
+        int i = 0;
+        for (Country country : mSelectedCountryList) {
+            getDataFromApiAndUpdate(country, i, false);
+            i++;
         }
-        return sb.toString();
+        Toast.makeText(this, R.string.updating_complete, Toast.LENGTH_SHORT).show();
     }
+
+    private void updateGivenCountry(int countryClicked) {
+        Country country = mSelectedCountryList.get(countryClicked);
+        getDataFromApiAndUpdate(country, countryClicked, false);
+    }
+
+    public void getDataFromApiAndUpdate(Country country, int countryListIndex, boolean getYesterdayData) {
+        String url = Constants.COUNTRY_DATA_API + country.getCountryCode();
+        if (getYesterdayData) {
+            url += "?yesterday=true";
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
+            try {
+                StringBuilder sb = getUpdateSQL(country, countryListIndex, getYesterdayData, response);
+                if (sb == null) return;
+
+                mDb.execSQL(sb.toString());
+                updateCountryInList(country.getCountryCode(), countryListIndex);
+                mAdapter.notifyDataSetChanged();
+            } catch (JSONException e) {
+                e.printStackTrace();
+                onDataFetchError();
+            } catch (SQLException e) {
+                Toast.makeText(getApplicationContext(), R.string.update_failed, Toast.LENGTH_SHORT).show();
+            }
+        }, error -> {
+            error.printStackTrace();
+            onDataFetchError();
+        });
+        RequestQueueSingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+    }
+
+    private StringBuilder getUpdateSQL(Country country, int countryListIndex, boolean getYesterdayData, JSONObject response) throws JSONException {
+        int latestCases = response.getInt("todayCases");
+        int latestDeaths = response.getInt("todayDeaths");
+        int latestRecovered = response.getInt("todayRecovered");
+        Long epochDate = response.getLong("updated");
+
+        boolean noNewCases = latestCases == 0 && latestDeaths == 0 && latestRecovered == 0;
+        boolean oldDataNoNewCases = country.getLatestCases() == 0 && country.getLatestDeaths() == 0 && country.getLatestRecovered() == 0;
+        boolean dataIsTheSame = country.getLatestCases() == latestCases && country.getLatestDeaths() == latestDeaths && country.getLatestRecovered() == latestRecovered && country.getLastUpdateDate().equals(Helper.formatDate(epochDate));
+        StringBuilder sb = new StringBuilder();
+
+        if (dataIsTheSame) {
+            return null;
+        }
+        // If today and yesterday no new cases
+        else if (noNewCases && oldDataNoNewCases) {
+            if (getYesterdayData) {
+                epochDate -= 86400000;
+                country.setLastUpdateDate(Helper.formatDate(epochDate));
+                sb.append(Constants.UPDATE_COUNTRY)
+                        .append("date='")
+                        .append(Helper.formatDate(epochDate))
+                        .append("' WHERE country_code='")
+                        .append(country.getCountryCode()).append("';");
+            } else {
+                getDataFromApiAndUpdate(country, countryListIndex, true);
+                return null;
+            }
+        }
+        // Old data has cases, new doesn't and its not yesterday data then try getting yesterday data
+        else if (noNewCases && !getYesterdayData) {
+            getDataFromApiAndUpdate(country, countryListIndex, true);
+            return null;
+        }
+        // New data has cases
+        else {
+            if (getYesterdayData) {
+                epochDate -= 86400000;
+            }
+
+            sb.append(Constants.UPDATE_COUNTRY)
+                    .append("latest_cases=")
+                    .append(latestCases)
+                    .append(", latest_deaths=")
+                    .append(latestDeaths)
+                    .append(", latest_recovered=")
+                    .append(latestRecovered)
+                    .append(", date='")
+                    .append(Helper.formatDate(epochDate))
+                    .append("' WHERE country_code='")
+                    .append(country.getCountryCode()).append("';");
+        }
+        return sb;
+    }
+
+    private void onDataFetchError() {
+        Toast.makeText(getApplicationContext(), R.string.data_fetch_error, Toast.LENGTH_SHORT).show();
+    }
+
 }

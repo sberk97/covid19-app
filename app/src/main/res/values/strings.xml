@@ -34,4 +34,11 @@
     <string name="no_reports">No data for given date</string>
     <string name="action_remove">Remove</string>
     <string name="selected_country_card_settings">Settings</string>
+    <string name="action_refresh_data">Refresh data</string>
+    <string name="action_update_item">Update</string>
+    <string name="action_update_all">Update all</string>
+    <string name="error_country_remove">Error during country removal</string>
+    <string name="error_country_retrieve">Error during country retrieval</string>
+    <string name="updating_complete">Updating countries completed!</string>
+    <string name="update_failed">Updating data failed</string>
 </resources>
