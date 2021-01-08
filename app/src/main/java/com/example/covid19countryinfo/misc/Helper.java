@@ -3,16 +3,14 @@ package com.example.covid19countryinfo.misc;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.covid19countryinfo.R;
 import com.example.covid19countryinfo.fragments.EmptyListFragment;
-import com.example.covid19countryinfo.models.SelectedListCountry;
+import com.example.covid19countryinfo.models.Country;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 public class Helper {
@@ -32,9 +30,9 @@ public class Helper {
         return selectedCountriesCode;
     }
 
-    public static String getCountryCodesString(List<SelectedListCountry> mSelectedCountryList) {
+    public static String getCountryCodesString(List<Country> mSelectedCountryList) {
         StringBuilder sb = new StringBuilder();
-        for(SelectedListCountry country : mSelectedCountryList) {
+        for(Country country : mSelectedCountryList) {
             sb.append(country.getCountryCode()).append(",");
         }
         return sb.toString();

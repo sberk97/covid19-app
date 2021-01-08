@@ -16,7 +16,7 @@ import com.example.covid19countryinfo.misc.Constants;
 import com.example.covid19countryinfo.misc.DatabaseHelper;
 import com.example.covid19countryinfo.misc.Helper;
 import com.example.covid19countryinfo.misc.RequestQueueSingleton;
-import com.example.covid19countryinfo.models.SelectedListCountry;
+import com.example.covid19countryinfo.models.Country;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AlertDialog;
@@ -39,6 +39,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
     private SQLiteDatabase mDb;
 
     private SelectedCountryListAdapter mAdapter;
-    private List<SelectedListCountry> mSelectedCountryList = new ArrayList<>();
+    private List<Country> mSelectedCountryList = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private boolean isEmptyListFragmentDisplayed = false;
 
@@ -128,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
 
     private void updateCountryInList(String countryCode, int countryListIndex) {
         String sql = Constants.GET_GIVEN_COUNTRY + countryCode + "';";
-        List<SelectedListCountry> newCountryData = fetchCountries(sql);
+        List<Country> newCountryData = fetchCountries(sql);
         mSelectedCountryList.set(countryListIndex, newCountryData.get(0));
     }
 
@@ -143,8 +144,8 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
         }
     }
 
-    private List<SelectedListCountry> fetchCountries(String sql) {
-        List<SelectedListCountry> retrievedCountries = new ArrayList<>();
+    private List<Country> fetchCountries(String sql) {
+        List<Country> retrievedCountries = new ArrayList<>();
         try {
             Cursor c = mDb.rawQuery(sql, null);
 
@@ -159,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
                 int todayDeaths = c.getInt(3);
                 int todayRecovered = c.getInt(4);
                 String lastUpdateDate = c.getString(5);
-                retrievedCountries.add(new SelectedListCountry(countryName, countryCode, todayCases, todayDeaths, todayRecovered, lastUpdateDate));
+                retrievedCountries.add(new Country(countryName, countryCode, todayCases, todayDeaths, todayRecovered, lastUpdateDate));
             }
             c.close();
         } catch (SQLException e) {
@@ -246,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
     private void updateAllCountries() {
         String countryCodes = Helper.getCountryCodesString(mSelectedCountryList);
         int i = 0;
-        for (SelectedListCountry country : mSelectedCountryList) {
+        for (Country country : mSelectedCountryList) {
             getDataFromApiAndUpdate(country, i, false);
             i++;
         }
@@ -254,11 +255,11 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
     }
 
     private void updateGivenCountry(int countryClicked) {
-        SelectedListCountry country = mSelectedCountryList.get(countryClicked);
+        Country country = mSelectedCountryList.get(countryClicked);
         getDataFromApiAndUpdate(country, countryClicked, false);
     }
 
-    public void getDataFromApiAndUpdate(SelectedListCountry country, int countryListIndex, boolean getYesterdayData) {
+    public void getDataFromApiAndUpdate(Country country, int countryListIndex, boolean getYesterdayData) {
         String url = Constants.COUNTRY_DATA_API + country.getCountryCode();
         if (getYesterdayData) {
             url += "?yesterday=true";
@@ -266,57 +267,8 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
             try {
-                int todayCases = response.getInt("todayCases");
-                int todayDeaths = response.getInt("todayDeaths");
-                int todayRecovered = response.getInt("todayRecovered");
-                Long epochDate = response.getLong("updated");
-
-                boolean noNewCases = todayCases == 0 && todayDeaths == 0 && todayRecovered == 0;
-                boolean oldDataNoNewCases = country.getTodayCases() == 0 && country.getTodayDeaths() == 0 && country.getTodayRecovered() == 0;
-                boolean dataIsTheSame = country.getTodayCases() == todayCases && country.getTodayDeaths() == todayDeaths && country.getTodayRecovered() == todayRecovered && country.getLastUpdateDate().equals(Helper.formatDate(epochDate));
-                StringBuilder sb = new StringBuilder();
-
-                if (dataIsTheSame) {
-                    return;
-                }
-                // If today and yesterday no new cases
-                else if (noNewCases && oldDataNoNewCases) {
-                    if (getYesterdayData) {
-                        epochDate -= 86400000;
-                        country.setLastUpdateDate(Helper.formatDate(epochDate));
-                        sb.append(Constants.UPDATE_COUNTRY)
-                                .append("date='")
-                                .append(Helper.formatDate(epochDate))
-                                .append("' WHERE country_code='")
-                                .append(country.getCountryCode()).append("';");
-                    } else {
-                        getDataFromApiAndUpdate(country, countryListIndex, true);
-                        return;
-                    }
-                }
-                // Old data has cases, new doesn't and its not yesterday data then try getting yesterday data
-                else if (noNewCases && !getYesterdayData) {
-                    getDataFromApiAndUpdate(country, countryListIndex, true);
-                    return;
-                }
-                // New data has cases
-                else {
-                    if (getYesterdayData) {
-                        epochDate -= 86400000;
-                    }
-
-                    sb.append(Constants.UPDATE_COUNTRY)
-                        .append("today_cases=")
-                        .append(todayCases)
-                        .append(", today_deaths=")
-                        .append(todayDeaths)
-                        .append(", today_recovered=")
-                        .append(todayRecovered)
-                        .append(", date='")
-                        .append(Helper.formatDate(epochDate))
-                        .append("' WHERE country_code='")
-                        .append(country.getCountryCode()).append("';");
-                }
+                StringBuilder sb = getUpdateSQL(country, countryListIndex, getYesterdayData, response);
+                if (sb == null) return;
 
                 mDb.execSQL(sb.toString());
                 updateCountryInList(country.getCountryCode(), countryListIndex);
@@ -332,6 +284,61 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
             onDataFetchError();
         });
         RequestQueueSingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+    }
+
+    private StringBuilder getUpdateSQL(Country country, int countryListIndex, boolean getYesterdayData, JSONObject response) throws JSONException {
+        int todayCases = response.getInt("todayCases");
+        int todayDeaths = response.getInt("todayDeaths");
+        int todayRecovered = response.getInt("todayRecovered");
+        Long epochDate = response.getLong("updated");
+
+        boolean noNewCases = todayCases == 0 && todayDeaths == 0 && todayRecovered == 0;
+        boolean oldDataNoNewCases = country.getLatestCases() == 0 && country.getLatestDeaths() == 0 && country.getLatestRecovered() == 0;
+        boolean dataIsTheSame = country.getLatestCases() == todayCases && country.getLatestDeaths() == todayDeaths && country.getLatestRecovered() == todayRecovered && country.getLastUpdateDate().equals(Helper.formatDate(epochDate));
+        StringBuilder sb = new StringBuilder();
+
+        if (dataIsTheSame) {
+            return null;
+        }
+        // If today and yesterday no new cases
+        else if (noNewCases && oldDataNoNewCases) {
+            if (getYesterdayData) {
+                epochDate -= 86400000;
+                country.setLastUpdateDate(Helper.formatDate(epochDate));
+                sb.append(Constants.UPDATE_COUNTRY)
+                        .append("date='")
+                        .append(Helper.formatDate(epochDate))
+                        .append("' WHERE country_code='")
+                        .append(country.getCountryCode()).append("';");
+            } else {
+                getDataFromApiAndUpdate(country, countryListIndex, true);
+                return null;
+            }
+        }
+        // Old data has cases, new doesn't and its not yesterday data then try getting yesterday data
+        else if (noNewCases && !getYesterdayData) {
+            getDataFromApiAndUpdate(country, countryListIndex, true);
+            return null;
+        }
+        // New data has cases
+        else {
+            if (getYesterdayData) {
+                epochDate -= 86400000;
+            }
+
+            sb.append(Constants.UPDATE_COUNTRY)
+                .append("latest_cases=")
+                .append(todayCases)
+                .append(", latest_deaths=")
+                .append(todayDeaths)
+                .append(", latest_recovered=")
+                .append(todayRecovered)
+                .append(", date='")
+                .append(Helper.formatDate(epochDate))
+                .append("' WHERE country_code='")
+                .append(country.getCountryCode()).append("';");
+        }
+        return sb;
     }
 
     private void onDataFetchError() {

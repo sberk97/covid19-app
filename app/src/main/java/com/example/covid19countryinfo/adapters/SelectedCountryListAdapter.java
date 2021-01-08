@@ -1,7 +1,6 @@
 package com.example.covid19countryinfo.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,18 +10,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.covid19countryinfo.R;
-import com.example.covid19countryinfo.models.SelectedListCountry;
+import com.example.covid19countryinfo.models.Country;
 
 import java.util.List;
 
 public class SelectedCountryListAdapter extends
         RecyclerView.Adapter<SelectedCountryListAdapter.SelectedCountryViewHolder> {
 
-    private List<SelectedListCountry> mCountryList;
+    private List<Country> mCountryList;
     private LayoutInflater mInflater;
     private OnSelectedCountryListener mOnSelectedCountryListener;
 
-    public SelectedCountryListAdapter(Context context, List<SelectedListCountry> countryList, OnSelectedCountryListener onSelectedCountryListener) {
+    public SelectedCountryListAdapter(Context context, List<Country> countryList, OnSelectedCountryListener onSelectedCountryListener) {
         mInflater = LayoutInflater.from(context);
         this.mCountryList = countryList;
         this.mOnSelectedCountryListener = onSelectedCountryListener;
@@ -38,9 +37,9 @@ public class SelectedCountryListAdapter extends
     @Override
     public void onBindViewHolder(SelectedCountryViewHolder holder, int position) {
         String countryName = mCountryList.get(position).getCountryName();
-        int countryCases = mCountryList.get(position).getTodayCases();
-        int countryDeaths = mCountryList.get(position).getTodayDeaths();
-        int countryRecovered = mCountryList.get(position).getTodayRecovered();
+        int countryCases = mCountryList.get(position).getLatestCases();
+        int countryDeaths = mCountryList.get(position).getLatestDeaths();
+        int countryRecovered = mCountryList.get(position).getLatestRecovered();
         String countryLastUpdate = mCountryList.get(position).getLastUpdateDate();
 
         int commaInCountryName = countryName.indexOf(',');
@@ -72,9 +71,9 @@ public class SelectedCountryListAdapter extends
         public SelectedCountryViewHolder(View itemView, OnSelectedCountryListener onSelectedCountryListener) {
             super(itemView);
             countryNameView = itemView.findViewById(R.id.selected_country_name);
-            countryCasesView = itemView.findViewById(R.id.selected_country_today_cases);
-            countryDeathsView = itemView.findViewById(R.id.selected_country_today_deaths);
-            countryRecoveredView = itemView.findViewById(R.id.selected_country_today_recovered);
+            countryCasesView = itemView.findViewById(R.id.selected_country_latest_cases);
+            countryDeathsView = itemView.findViewById(R.id.selected_country_latest_deaths);
+            countryRecoveredView = itemView.findViewById(R.id.selected_country_latest_recovered);
             countryLastUpdateView = itemView.findViewById(R.id.selected_country_last_update);
 
             this.OnSelectedCountryListener = onSelectedCountryListener;
