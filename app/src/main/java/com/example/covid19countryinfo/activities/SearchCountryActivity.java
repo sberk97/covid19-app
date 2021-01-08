@@ -4,8 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,14 +23,13 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.covid19countryinfo.R;
 import com.example.covid19countryinfo.adapters.SearchCountryListAdapter;
 import com.example.covid19countryinfo.misc.Constants;
 import com.example.covid19countryinfo.misc.DatabaseHelper;
-import com.example.covid19countryinfo.misc.FetchCountryTask;
+import com.example.covid19countryinfo.misc.FetchLocationTask;
+import com.example.covid19countryinfo.misc.Helper;
 import com.example.covid19countryinfo.misc.RequestQueueSingleton;
 import com.example.covid19countryinfo.models.SearchListCountry;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -40,20 +37,12 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.StringTokenizer;
 
-public class SearchCountryActivity extends AppCompatActivity implements FetchCountryTask.OnCountryFetchCompleted, SearchCountryListAdapter.OnSearchCountryListener {
+public class SearchCountryActivity extends AppCompatActivity implements FetchLocationTask.OnCountryFetchCompleted, SearchCountryListAdapter.OnSearchCountryListener {
 
     private List<SearchListCountry> mCountryList = new ArrayList<>();
     private RecyclerView mRecyclerView;
@@ -84,8 +73,6 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchCou
         mRecyclerView.setAdapter(mAdapter);
         // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL);
-//        mRecyclerView.addItemDecoration(dividerItemDecoration);
     }
 
     @Override
@@ -93,18 +80,14 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchCou
         mProgressBar.setVisibility(View.VISIBLE);
         String countryName = mCountryList.get(position).getCountryName();
         String countryCode = mCountryList.get(position).getCountryCode();
-        getDataForGivenCountry(countryName, countryCode, false);
-    }
-
-    private void saveCountryData(String sql) {
-        mDb.execSQL(sql);
+        getAndSaveDataForGivenCountry(countryName, countryCode, false);
     }
 
     private void onDataFetchError() {
         Toast.makeText(getApplicationContext(), R.string.data_fetch_error, Toast.LENGTH_SHORT).show();
     }
 
-    public void getDataForGivenCountry(String countryName, String countryCode, boolean getYesterdayData) {
+    public void getAndSaveDataForGivenCountry(String countryName, String countryCode, boolean getYesterdayData) {
         String url = Constants.COUNTRY_DATA_API + countryCode;
         if(getYesterdayData) {
             url += "?yesterday=true";
@@ -114,9 +97,9 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchCou
                 int todayCases = response.getInt("todayCases");
                 int todayDeaths = response.getInt("todayDeaths");
                 int todayRecovered = response.getInt("todayRecovered");
-                boolean hasNoCases = todayCases==0 && todayDeaths==0 && todayRecovered==0;
+                boolean hasNoCases = todayCases == 0 && todayDeaths == 0 && todayRecovered == 0;
                 if (hasNoCases && !getYesterdayData) {
-                    getDataForGivenCountry(countryName, countryCode, true);
+                    getAndSaveDataForGivenCountry(countryName, countryCode, true);
                     return;
                 }
 
@@ -134,8 +117,8 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchCou
                         .append(todayCases).append(",")
                         .append(todayDeaths).append(",")
                         .append(todayRecovered).append(",'")
-                        .append(formatDate(epochDate)).append("');");
-                saveCountryData(sb.toString());
+                        .append(Helper.formatDate(epochDate)).append("');");
+                mDb.execSQL(sb.toString());
                 Intent returnIntent = getIntent();
                 returnIntent.putExtra("addedCountry", countryCode);
                 setResult(Activity.RESULT_OK, returnIntent);
@@ -149,11 +132,6 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchCou
             onDataFetchError();
         });
         RequestQueueSingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
-    }
-
-    private String formatDate(Long epochTime) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
-        return sdf.format(new Date(epochTime));
     }
 
     @Override
@@ -183,8 +161,6 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchCou
             case R.id.action_locate:
                 getLocation();
                 return true;
-            default:
-                // Do nothing
         }
         return super.onOptionsItemSelected(item);
     }
@@ -193,27 +169,28 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchCou
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, Constants.REQUEST_LOCATION_PERMISSION);
         } else {
-            mFusedLocationClient.getLastLocation().addOnSuccessListener( new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    if (location != null) {
-                        mProgressBar.setVisibility(View.VISIBLE);
-                        // Start the reverse geocode AsyncTask
-                        new FetchCountryTask(SearchCountryActivity.this, SearchCountryActivity.this).execute(location);
-                    } else {
-                        Toast.makeText(getApplicationContext(), R.string.no_location, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+            mFusedLocationClient.getLastLocation().addOnSuccessListener(getOnSuccessListener());
         }
+    }
+
+    private OnSuccessListener<Location> getOnSuccessListener() {
+        return new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    mProgressBar.setVisibility(View.VISIBLE);
+                    new FetchLocationTask(SearchCountryActivity.this, SearchCountryActivity.this).execute(location);
+                } else {
+                    Toast.makeText(getApplicationContext(), R.string.no_location, Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case Constants.REQUEST_LOCATION_PERMISSION:
-                // If the permission is granted, get the location,
-                // otherwise, show a Toast
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getLocation();
                 } else {
@@ -224,7 +201,7 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchCou
     }
 
     @Override
-    public void onCountryFetchCompleted(String result, boolean completedSuccessfully) {
+    public void onLocationFetchCompleted(String result, boolean completedSuccessfully) {
         mProgressBar.setVisibility(View.INVISIBLE);
         if (completedSuccessfully) {
             mSearch.expandActionView();
@@ -237,11 +214,7 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchCou
     }
 
     public List<SearchListCountry> getCountryList() {
-        HashSet<String> selectedCountriesCode = new HashSet<>();
-        StringTokenizer st = new StringTokenizer(getIntent().getStringExtra(Constants.EXTRA_SELECTED_COUNTRIES), ",");
-        while(st.hasMoreTokens()) {
-            selectedCountriesCode.add(st.nextToken());
-        }
+        HashSet<String> selectedCountriesCode = Helper.turnCountryCodeStringToSet(getIntent().getStringExtra(Constants.EXTRA_SELECTED_COUNTRIES));
 
         String[] countries = getResources().getStringArray(R.array.countries_array);
         List<SearchListCountry> countryObjects = new ArrayList<>();

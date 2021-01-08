@@ -25,6 +25,8 @@ public final class Constants {
 
     public static final String REMOVE_COUNTRY = "DELETE FROM "+ DATABASE_TABLE +" WHERE country_code='";
 
+    public static final String UPDATE_COUNTRY = "UPDATE " + DATABASE_TABLE + " SET ";
+
     public static final String EMPTY_LIST_FRAGMENT = "EMPTY_LIST_FRAGMENT";
 
 }

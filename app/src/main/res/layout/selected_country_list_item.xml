@@ -98,7 +98,7 @@
             android:src="@drawable/ic_more_icon"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/selected_country_card_settings"
-            android:onClick="showSelectedCountryCardSettings"
+            android:onClick="showCountryCardSettings"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
