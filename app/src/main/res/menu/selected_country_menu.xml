@@ -4,10 +4,11 @@
     tools:context=".activities.MainActivity">
 
     <item
+        android:id="@+id/action_update_item"
+        android:title="@string/action_update_item" />
+
+    <item
         android:id="@+id/action_remove"
         android:title="@string/action_remove" />
 
-    <item
-        android:id="@+id/action_update_item"
-        android:title="@string/action_update_item" />
 </menu>

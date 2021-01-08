@@ -251,7 +251,6 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
             getDataFromApiAndUpdate(country, i, false);
             i++;
         }
-        Toast.makeText(this, R.string.updating_complete, Toast.LENGTH_SHORT).show();
     }
 
     private void updateGivenCountry(int countryClicked) {
@@ -290,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
         int latestCases = response.getInt("todayCases");
         int latestDeaths = response.getInt("todayDeaths");
         int latestRecovered = response.getInt("todayRecovered");
-        Long epochDate = response.getLong("updated");
+        long epochDate = response.getLong("updated");
 
         boolean noNewCases = latestCases == 0 && latestDeaths == 0 && latestRecovered == 0;
         boolean oldDataNoNewCases = country.getLatestCases() == 0 && country.getLatestDeaths() == 0 && country.getLatestRecovered() == 0;
