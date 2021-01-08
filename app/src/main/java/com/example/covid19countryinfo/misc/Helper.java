@@ -23,7 +23,7 @@ public class Helper {
     public static HashSet<String> turnCountryCodeStringToSet(String countryCodes) {
         HashSet<String> selectedCountriesCode = new HashSet<>();
         StringTokenizer st = new StringTokenizer(countryCodes, ",");
-        while(st.hasMoreTokens()) {
+        while (st.hasMoreTokens()) {
             selectedCountriesCode.add(st.nextToken());
         }
 
@@ -32,7 +32,7 @@ public class Helper {
 
     public static String getCountryCodesString(List<Country> mSelectedCountryList) {
         StringBuilder sb = new StringBuilder();
-        for(Country country : mSelectedCountryList) {
+        for (Country country : mSelectedCountryList) {
             sb.append(country.getCountryCode()).append(",");
         }
         return sb.toString();

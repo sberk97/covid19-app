@@ -89,7 +89,7 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
 
     public void getAndSaveDataForGivenCountry(String countryName, String countryCode, boolean getYesterdayData) {
         String url = Constants.COUNTRY_DATA_API + countryCode;
-        if(getYesterdayData) {
+        if (getYesterdayData) {
             url += "?yesterday=true";
         }
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
@@ -104,7 +104,7 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
                 }
 
                 Long epochDate = response.getLong("updated");
-                if(getYesterdayData && !hasNoCases) {
+                if (getYesterdayData && !hasNoCases) {
                     epochDate -= 86400000;
                 }
 
@@ -146,6 +146,7 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
             public boolean onQueryTextSubmit(String query) {
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String newText) {
                 mAdapter.getFilter().filter(newText);
@@ -167,7 +168,7 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
 
     private void getLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, Constants.REQUEST_LOCATION_PERMISSION);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.REQUEST_LOCATION_PERMISSION);
         } else {
             mFusedLocationClient.getLastLocation().addOnSuccessListener(getOnSuccessListener());
         }
@@ -218,10 +219,10 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
 
         String[] countries = getResources().getStringArray(R.array.countries_array);
         List<Country> countryObjects = new ArrayList<>();
-        for(String country : countries) {
+        for (String country : countries) {
             int lastComma = country.lastIndexOf(',');
             String countryName = country.substring(0, lastComma);
-            String countryCode = country.substring(lastComma+1);
+            String countryCode = country.substring(lastComma + 1);
             if (!selectedCountriesCode.contains(countryCode)) {
                 countryObjects.add(new Country(countryName, countryCode));
             }

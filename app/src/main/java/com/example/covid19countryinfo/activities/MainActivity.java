@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == Constants.LAUNCH_SECOND_ACTIVITY) {
-            if (resultCode == Activity.RESULT_OK){
+            if (resultCode == Activity.RESULT_OK) {
                 String addedCountry = data.getStringExtra("addedCountry");
                 addCountryToList(addedCountry);
                 setVisibilityOnScreen();
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
         try {
             Cursor c = mDb.rawQuery(sql, null);
 
-            if(c.getCount() == 0) {
+            if (c.getCount() == 0) {
                 return retrievedCountries;
             }
 
@@ -175,17 +175,17 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
         myAlertBuilder.setTitle(R.string.action_about);
         StringBuilder sb = new StringBuilder();
         sb.append(getString(R.string.author))
-            .append("\n")
-            .append(getString(R.string.ub_number))
-            .append("\n")
-            .append(getString(R.string.data_from))
-            .append("\n")
-            .append(Constants.COUNTRY_DATA_API_DOMAIN);
+                .append("\n")
+                .append(getString(R.string.ub_number))
+                .append("\n")
+                .append(getString(R.string.data_from))
+                .append("\n")
+                .append(Constants.COUNTRY_DATA_API_DOMAIN);
         final SpannableString s = new SpannableString(sb.toString()); // msg should have url to enable clicking
         Linkify.addLinks(s, Linkify.ALL);
         myAlertBuilder.setMessage(s);
         myAlertBuilder.setPositiveButton(R.string.ok, null);
-        ((TextView)myAlertBuilder.show().findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+        ((TextView) myAlertBuilder.show().findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     @Override
@@ -327,16 +327,16 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
             }
 
             sb.append(Constants.UPDATE_COUNTRY)
-                .append("latest_cases=")
-                .append(latestCases)
-                .append(", latest_deaths=")
-                .append(latestDeaths)
-                .append(", latest_recovered=")
-                .append(latestRecovered)
-                .append(", date='")
-                .append(Helper.formatDate(epochDate))
-                .append("' WHERE country_code='")
-                .append(country.getCountryCode()).append("';");
+                    .append("latest_cases=")
+                    .append(latestCases)
+                    .append(", latest_deaths=")
+                    .append(latestDeaths)
+                    .append(", latest_recovered=")
+                    .append(latestRecovered)
+                    .append(", date='")
+                    .append(Helper.formatDate(epochDate))
+                    .append("' WHERE country_code='")
+                    .append(country.getCountryCode()).append("';");
         }
         return sb;
     }
