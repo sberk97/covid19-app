@@ -156,11 +156,11 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
             while (c.moveToNext()) {
                 String countryName = c.getString(0);
                 String countryCode = c.getString(1);
-                int todayCases = c.getInt(2);
-                int todayDeaths = c.getInt(3);
-                int todayRecovered = c.getInt(4);
+                int latestCases = c.getInt(2);
+                int latestDeaths = c.getInt(3);
+                int latestRecovered = c.getInt(4);
                 String lastUpdateDate = c.getString(5);
-                retrievedCountries.add(new Country(countryName, countryCode, todayCases, todayDeaths, todayRecovered, lastUpdateDate));
+                retrievedCountries.add(new Country(countryName, countryCode, latestCases, latestDeaths, latestRecovered, lastUpdateDate));
             }
             c.close();
         } catch (SQLException e) {
@@ -287,14 +287,14 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
     }
 
     private StringBuilder getUpdateSQL(Country country, int countryListIndex, boolean getYesterdayData, JSONObject response) throws JSONException {
-        int todayCases = response.getInt("todayCases");
-        int todayDeaths = response.getInt("todayDeaths");
-        int todayRecovered = response.getInt("todayRecovered");
+        int latestCases = response.getInt("todayCases");
+        int latestDeaths = response.getInt("todayDeaths");
+        int latestRecovered = response.getInt("todayRecovered");
         Long epochDate = response.getLong("updated");
 
-        boolean noNewCases = todayCases == 0 && todayDeaths == 0 && todayRecovered == 0;
+        boolean noNewCases = latestCases == 0 && latestDeaths == 0 && latestRecovered == 0;
         boolean oldDataNoNewCases = country.getLatestCases() == 0 && country.getLatestDeaths() == 0 && country.getLatestRecovered() == 0;
-        boolean dataIsTheSame = country.getLatestCases() == todayCases && country.getLatestDeaths() == todayDeaths && country.getLatestRecovered() == todayRecovered && country.getLastUpdateDate().equals(Helper.formatDate(epochDate));
+        boolean dataIsTheSame = country.getLatestCases() == latestCases && country.getLatestDeaths() == latestDeaths && country.getLatestRecovered() == latestRecovered && country.getLastUpdateDate().equals(Helper.formatDate(epochDate));
         StringBuilder sb = new StringBuilder();
 
         if (dataIsTheSame) {
@@ -328,11 +328,11 @@ public class MainActivity extends AppCompatActivity implements SelectedCountryLi
 
             sb.append(Constants.UPDATE_COUNTRY)
                 .append("latest_cases=")
-                .append(todayCases)
+                .append(latestCases)
                 .append(", latest_deaths=")
-                .append(todayDeaths)
+                .append(latestDeaths)
                 .append(", latest_recovered=")
-                .append(todayRecovered)
+                .append(latestRecovered)
                 .append(", date='")
                 .append(Helper.formatDate(epochDate))
                 .append("' WHERE country_code='")

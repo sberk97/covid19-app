@@ -31,7 +31,7 @@ import com.example.covid19countryinfo.misc.DatabaseHelper;
 import com.example.covid19countryinfo.misc.FetchLocationTask;
 import com.example.covid19countryinfo.misc.Helper;
 import com.example.covid19countryinfo.misc.RequestQueueSingleton;
-import com.example.covid19countryinfo.models.SearchListCountry;
+import com.example.covid19countryinfo.models.Country;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -44,7 +44,7 @@ import java.util.List;
 
 public class SearchCountryActivity extends AppCompatActivity implements FetchLocationTask.OnCountryFetchCompleted, SearchCountryListAdapter.OnSearchCountryListener {
 
-    private List<SearchListCountry> mCountryList = new ArrayList<>();
+    private List<Country> mCountryList = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private SearchCountryListAdapter mAdapter;
     private FusedLocationProviderClient mFusedLocationClient;
@@ -94,10 +94,10 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
         }
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
             try {
-                int todayCases = response.getInt("todayCases");
-                int todayDeaths = response.getInt("todayDeaths");
-                int todayRecovered = response.getInt("todayRecovered");
-                boolean hasNoCases = todayCases == 0 && todayDeaths == 0 && todayRecovered == 0;
+                int latestCases = response.getInt("todayCases");
+                int latestDeaths = response.getInt("todayDeaths");
+                int latestRecovered = response.getInt("todayRecovered");
+                boolean hasNoCases = latestCases == 0 && latestDeaths == 0 && latestRecovered == 0;
                 if (hasNoCases && !getYesterdayData) {
                     getAndSaveDataForGivenCountry(countryName, countryCode, true);
                     return;
@@ -114,9 +114,9 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
                         .append(" VALUES('")
                         .append(countryName.replace("'", "''")).append("','")
                         .append(countryCode).append("',")
-                        .append(todayCases).append(",")
-                        .append(todayDeaths).append(",")
-                        .append(todayRecovered).append(",'")
+                        .append(latestCases).append(",")
+                        .append(latestDeaths).append(",")
+                        .append(latestRecovered).append(",'")
                         .append(Helper.formatDate(epochDate)).append("');");
                 mDb.execSQL(sb.toString());
                 Intent returnIntent = getIntent();
@@ -213,17 +213,17 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
         }
     }
 
-    public List<SearchListCountry> getCountryList() {
+    public List<Country> getCountryList() {
         HashSet<String> selectedCountriesCode = Helper.turnCountryCodeStringToSet(getIntent().getStringExtra(Constants.EXTRA_SELECTED_COUNTRIES));
 
         String[] countries = getResources().getStringArray(R.array.countries_array);
-        List<SearchListCountry> countryObjects = new ArrayList<>();
+        List<Country> countryObjects = new ArrayList<>();
         for(String country : countries) {
             int lastComma = country.lastIndexOf(',');
             String countryName = country.substring(0, lastComma);
             String countryCode = country.substring(lastComma+1);
             if (!selectedCountriesCode.contains(countryCode)) {
-                countryObjects.add(new SearchListCountry(countryName, countryCode));
+                countryObjects.add(new Country(countryName, countryCode));
             }
         }
         return countryObjects;
