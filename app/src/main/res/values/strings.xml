@@ -41,4 +41,6 @@
     <string name="error_country_retrieve">Error during country retrieval</string>
     <string name="updating_complete">Updating countries completed!</string>
     <string name="update_failed">Updating data failed</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
