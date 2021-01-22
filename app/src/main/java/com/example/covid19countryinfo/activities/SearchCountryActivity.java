@@ -8,13 +8,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -53,6 +53,7 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
     private ProgressBar mProgressBar;
     private SQLiteDatabase mDb;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +67,7 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
         mDb = sqLiteHelper.getWritableDatabase();
 
         // Get a handle to the RecyclerView.
-        mRecyclerView = findViewById(R.id.recyclerview);
+        mRecyclerView = findViewById(R.id.search_country_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         // Create an adapter and supply the data to be displayed.
         mAdapter = new SearchCountryListAdapter(this, mCountryList, this);
@@ -74,10 +75,17 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
         mRecyclerView.setAdapter(mAdapter);
         // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        mRecyclerView.setOnTouchListener((v, event) -> {
+            hideKeyboard();
+            return false;
+        });
     }
 
     @Override
     public void onCountryClick(int position) {
+        hideKeyboard();
+
         mProgressBar.setVisibility(View.VISIBLE);
         String countryName = mCountryList.get(position).getCountryName();
         String countryCode = mCountryList.get(position).getCountryCode();
@@ -88,7 +96,7 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
         Toast.makeText(getApplicationContext(), R.string.data_fetch_error, Toast.LENGTH_SHORT).show();
     }
 
-    public void getAndSaveDataForGivenCountry(String countryName, String countryCode, boolean getYesterdayData) {
+    private void getAndSaveDataForGivenCountry(String countryName, String countryCode, boolean getYesterdayData) {
         String url = Constants.COUNTRY_DATA_API + countryCode;
         if (getYesterdayData) {
             url += "?yesterday=true";
@@ -215,7 +223,7 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
         }
     }
 
-    public List<Country> getCountryList() {
+    private List<Country> getCountryList() {
         HashSet<String> selectedCountriesCode = Helper.turnCountryCodeStringToSet(getIntent().getStringExtra(Constants.EXTRA_SELECTED_COUNTRIES));
 
         String[] countries = getResources().getStringArray(R.array.countries_array);
@@ -229,5 +237,10 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
             }
         }
         return countryObjects;
+    }
+
+    private void hideKeyboard() {
+        SearchView searchView = (SearchView) mSearch.getActionView();
+        searchView.clearFocus();
     }
 }
