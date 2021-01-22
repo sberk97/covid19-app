@@ -15,7 +15,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.Covid19CountryInfo.Menu" parent="Theme.Covid19CountryInfo">
+    <style name="Theme.Covid19CountryInfo.SearchActivity" parent="Theme.Covid19CountryInfo">
         <item name="colorSurface">@color/light_green</item>
         <item name="colorSecondary">@color/dark_green</item>
     </style>
