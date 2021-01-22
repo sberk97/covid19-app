@@ -5,7 +5,10 @@
     android:layout_height="wrap_content"
     android:minHeight="?attr/minTouchTargetSize"
     android:orientation="vertical"
-    android:padding="6dp">
+    android:padding="6dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?attr/selectableItemBackground">
 
     <TextView
         android:id="@+id/search_country_name"

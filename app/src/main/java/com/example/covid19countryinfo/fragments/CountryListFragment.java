@@ -75,9 +75,7 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
 
         setUpCountryList();
 
-//        mSwipeRefreshLayout.setColorScheme(
-//                R.color.swipe_color_1, R.color.swipe_color_2,
-//                R.color.swipe_color_3, R.color.swipe_color_4);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.light_green);
 
         setUpRecyclerView(view);
 

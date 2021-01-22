@@ -23,13 +23,14 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.SearchCountryActivity"
+        <activity
+            android:name=".activities.SearchCountryActivity"
             android:label="@string/search_country"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/Theme.Covid19CountryInfo.Menu">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=
-                    "com.example.covid19countryinfo.activities.MainActivity" />
+                android:value="com.example.covid19countryinfo.activities.MainActivity" />
         </activity>
     </application>
 
