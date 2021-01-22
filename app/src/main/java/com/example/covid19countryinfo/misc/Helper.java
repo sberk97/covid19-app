@@ -37,29 +37,4 @@ public class Helper {
         }
         return sb.toString();
     }
-
-    public static boolean displayFragment(FragmentManager fragmentManager, int fragmentId) {
-        EmptyListFragment emptyListFragment = EmptyListFragment.newInstance();
-
-        // Get the FragmentManager and start a transaction.
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        // Add the SimpleFragment.
-        fragmentTransaction.add(fragmentId, emptyListFragment).addToBackStack(null).commit();
-        // Set boolean flag to indicate fragment is open.
-        return true;
-    }
-
-    public static boolean hideFragment(FragmentManager fragmentManager, int fragmentId) {
-        // Check to see if the fragment is already showing.
-        EmptyListFragment emptyListFragment = (EmptyListFragment) fragmentManager.findFragmentById(fragmentId);
-        if (emptyListFragment != null) {
-            // Create and commit the transaction to remove the fragment.
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.remove(emptyListFragment).commit();
-        }
-
-        // Set boolean flag to indicate fragment is closed.
-        return false;
-    }
 }

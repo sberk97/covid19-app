@@ -1,18 +1,9 @@
 <resources>
     <string name="app_name">COVID-19 Country Data</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="search_country">Pick country</string>
     <string name="action_about">About</string>
     <string name="ok">ok</string>
     <string name="action_search">Search</string>
-    <string name="model_clicked_pattern">You clicked on the rank %1$d word: %2$s!</string>
     <string name="action_locate">Locate</string>
     <string name="permission_denied">Permission denied</string>
     <string name="no_location">No location available</string>
@@ -31,14 +22,11 @@
     <string name="cases">Cases: </string>
     <string name="recovered">Recovered: </string>
     <string name="last_update">Last update: </string>
-    <string name="no_reports">No data for given date</string>
     <string name="action_remove">Remove</string>
     <string name="selected_country_card_settings">Settings</string>
-    <string name="action_refresh_data">Refresh data</string>
     <string name="action_update_item">Update</string>
     <string name="action_update_all">Update all</string>
     <string name="error_country_remove">Error during country removal</string>
     <string name="error_country_retrieve">Error during country retrieval</string>
-    <string name="updating_complete">Updating countries completed!</string>
     <string name="update_failed">Updating data failed</string>
 </resources>
