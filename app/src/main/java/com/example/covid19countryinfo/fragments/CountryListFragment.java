@@ -1,7 +1,6 @@
 package com.example.covid19countryinfo.fragments;
 
 import android.annotation.SuppressLint;
-import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -13,17 +12,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.covid19countryinfo.R;
 import com.example.covid19countryinfo.activities.MainActivity;
@@ -105,7 +101,7 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
     }
 
     private void initiateRefresh() {
-        new UpdateCountryTask().execute();
+        new UpdateAllCountriesTask().execute();
     }
 
     private void setUpRecyclerView(View view) {
@@ -191,8 +187,11 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
     }
 
     private void updateGivenCountry(int countryClicked) {
-        Country country = mSelectedCountryList.get(countryClicked);
-        getDataFromApiAndUpdate(country, countryClicked, false);
+        if (!mSwipeRefreshLayout.isRefreshing()) {
+            mSwipeRefreshLayout.setRefreshing(true);
+        }
+
+        new UpdateCountryTask().execute(countryClicked);
     }
 
     private void getDataFromApiAndUpdate(Country country, int countryListIndex, boolean getYesterdayData) {
@@ -281,7 +280,7 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
         Toast.makeText(getContext(), R.string.data_fetch_error, Toast.LENGTH_SHORT).show();
     }
 
-    private class UpdateCountryTask extends AsyncTask<Void, Void, Boolean> {
+    private class UpdateAllCountriesTask extends AsyncTask<Void, Void, Boolean> {
 
         @Override
         protected Boolean doInBackground(Void... params) {
@@ -290,6 +289,25 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
                 getDataFromApiAndUpdate(country, i, false);
                 i++;
             }
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+
+            onRefreshComplete();
+        }
+
+    }
+
+    private class UpdateCountryTask extends AsyncTask<Integer, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Integer... params) {
+            Country country = mSelectedCountryList.get(params[0]);
+            getDataFromApiAndUpdate(country, params[0], false);
             return true;
         }
 
