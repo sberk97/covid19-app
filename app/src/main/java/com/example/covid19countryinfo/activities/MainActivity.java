@@ -13,6 +13,7 @@ import com.example.covid19countryinfo.fragments.CountryListFragment;
 import com.example.covid19countryinfo.fragments.EmptyListFragment;
 import com.example.covid19countryinfo.misc.Constants;
 import com.example.covid19countryinfo.misc.DatabaseHelper;
+import com.example.covid19countryinfo.misc.DatabaseOperations;
 import com.example.covid19countryinfo.misc.Helper;
 import com.example.covid19countryinfo.models.Country;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -40,7 +41,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private SQLiteDatabase mDb;
     private CountryListFragment countryListFragment;
-    MenuItem updateAllMenuItem;
+    private MenuItem updateAllMenuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         DatabaseHelper sqLiteHelper = DatabaseHelper.getInstance(this);
         mDb = sqLiteHelper.getWritableDatabase();
 
-        if (fetchCountries(Constants.GET_ALL_COUNTRIES).isEmpty()) {
+        if (DatabaseOperations.fetchCountries(Constants.GET_ALL_COUNTRIES, getApplicationContext(), mDb).isEmpty()) {
             displayEmptyListFragment();
         } else {
             displayCountryListFragment();
@@ -128,32 +129,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, SearchCountryActivity.class);
         intent.putExtra(Constants.EXTRA_SELECTED_COUNTRIES, Helper.getCountryCodesString(selectedCountryList));
         startActivityForResult(intent, Constants.LAUNCH_SECOND_ACTIVITY);
-    }
-
-    private List<Country> fetchCountries(String sql) {
-        List<Country> retrievedCountries = new ArrayList<>();
-        try {
-            Cursor c = mDb.rawQuery(sql, null);
-
-            if (c.getCount() == 0) {
-                return retrievedCountries;
-            }
-
-            while (c.moveToNext()) {
-                String countryName = c.getString(0);
-                String countryCode = c.getString(1);
-                int latestCases = c.getInt(2);
-                int latestDeaths = c.getInt(3);
-                int latestRecovered = c.getInt(4);
-                String lastUpdateDate = c.getString(5);
-                retrievedCountries.add(new Country(countryName, countryCode, latestCases, latestDeaths, latestRecovered, lastUpdateDate));
-            }
-            c.close();
-        } catch (SQLException e) {
-            Toast.makeText(getApplicationContext(), R.string.error_country_retrieve, Toast.LENGTH_SHORT).show();
-        }
-
-        return retrievedCountries;
     }
 
     public void onClickShowAbout() {

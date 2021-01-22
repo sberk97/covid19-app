@@ -30,6 +30,7 @@ import com.example.covid19countryinfo.activities.MainActivity;
 import com.example.covid19countryinfo.adapters.SelectedCountryListAdapter;
 import com.example.covid19countryinfo.misc.Constants;
 import com.example.covid19countryinfo.misc.DatabaseHelper;
+import com.example.covid19countryinfo.misc.DatabaseOperations;
 import com.example.covid19countryinfo.misc.Helper;
 import com.example.covid19countryinfo.misc.RequestQueueSingleton;
 import com.example.covid19countryinfo.models.Country;
@@ -120,7 +121,7 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
     }
 
     private void setUpCountryList() {
-        mSelectedCountryList = fetchCountries(Constants.GET_ALL_COUNTRIES);
+        mSelectedCountryList = DatabaseOperations.fetchCountries(Constants.GET_ALL_COUNTRIES, getContext(), mDb);
     }
 
     @Override
@@ -130,7 +131,7 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
 
     private void updateCountryInList(String countryCode, int countryListIndex) {
         String sql = Constants.GET_GIVEN_COUNTRY + countryCode + "';";
-        List<Country> newCountryData = fetchCountries(sql);
+        List<Country> newCountryData = DatabaseOperations.fetchCountries(sql, getContext(), mDb);
         mSelectedCountryList.set(countryListIndex, newCountryData.get(0));
     }
 
@@ -149,34 +150,8 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
         }
     }
 
-    private List<Country> fetchCountries(String sql) {
-        List<Country> retrievedCountries = new ArrayList<>();
-        try {
-            Cursor c = mDb.rawQuery(sql, null);
-
-            if (c.getCount() == 0) {
-                return retrievedCountries;
-            }
-
-            while (c.moveToNext()) {
-                String countryName = c.getString(0);
-                String countryCode = c.getString(1);
-                int latestCases = c.getInt(2);
-                int latestDeaths = c.getInt(3);
-                int latestRecovered = c.getInt(4);
-                String lastUpdateDate = c.getString(5);
-                retrievedCountries.add(new Country(countryName, countryCode, latestCases, latestDeaths, latestRecovered, lastUpdateDate));
-            }
-            c.close();
-        } catch (SQLException e) {
-            Toast.makeText(getContext(), R.string.error_country_retrieve, Toast.LENGTH_SHORT).show();
-        }
-
-        return retrievedCountries;
-    }
-
     public void addCountryToList(String countryCode) {
-        mSelectedCountryList.add(fetchCountries(Constants.GET_GIVEN_COUNTRY + countryCode + "';").get(0));
+        mSelectedCountryList.add(DatabaseOperations.fetchCountries(Constants.GET_GIVEN_COUNTRY + countryCode + "';", getContext(), mDb).get(0));
         mAdapter.notifyDataSetChanged();
     }
 
@@ -220,7 +195,7 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
         getDataFromApiAndUpdate(country, countryClicked, false);
     }
 
-    public void getDataFromApiAndUpdate(Country country, int countryListIndex, boolean getYesterdayData) {
+    private void getDataFromApiAndUpdate(Country country, int countryListIndex, boolean getYesterdayData) {
         String url = Constants.COUNTRY_DATA_API + country.getCountryCode();
         if (getYesterdayData) {
             url += "?yesterday=true";
