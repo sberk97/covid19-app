@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == Constants.LAUNCH_SECOND_ACTIVITY) {
             if (resultCode == Activity.RESULT_OK) {
                 String addedCountry = data.getStringExtra("addedCountry");
-                if(countryListFragment == null || !countryListFragment.isVisible()) {
+                if (countryListFragment == null || !countryListFragment.isVisible()) {
                     displayCountryListFragment();
                 } else {
                     countryListFragment.addCountryToList(addedCountry);
