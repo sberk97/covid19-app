@@ -3,14 +3,12 @@ package com.example.covid19countryinfo.activities;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import com.example.covid19countryinfo.R;
 import com.example.covid19countryinfo.fragments.CountryListFragment;
-import com.example.covid19countryinfo.fragments.EmptyListFragment;
+import com.example.covid19countryinfo.fragments.EmptyCountryListFragment;
 import com.example.covid19countryinfo.misc.Constants;
 import com.example.covid19countryinfo.misc.DatabaseHelper;
 import com.example.covid19countryinfo.misc.DatabaseOperations;
@@ -32,7 +30,6 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,13 +83,13 @@ public class MainActivity extends AppCompatActivity {
 
         removeCountryListFragment(fragmentManager);
 
-        EmptyListFragment fragment = new EmptyListFragment();
+        EmptyCountryListFragment fragment = new EmptyCountryListFragment();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(R.id.empty_list_fragment, fragment).commit();
+        transaction.add(R.id.empty_country_list_fragment, fragment).commit();
     }
 
     private void removeEmptyListFragment(FragmentManager fragmentManager) {
-        EmptyListFragment fragment = (EmptyListFragment) fragmentManager.findFragmentById(R.id.empty_list_fragment);
+        EmptyCountryListFragment fragment = (EmptyCountryListFragment) fragmentManager.findFragmentById(R.id.empty_country_list_fragment);
         if (fragment != null) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.remove(fragment).commit();

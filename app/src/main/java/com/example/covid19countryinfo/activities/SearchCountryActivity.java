@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,6 +29,7 @@ import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.covid19countryinfo.R;
 import com.example.covid19countryinfo.adapters.SearchCountryListAdapter;
+import com.example.covid19countryinfo.fragments.EmptySearchListFragment;
 import com.example.covid19countryinfo.misc.Constants;
 import com.example.covid19countryinfo.misc.DatabaseHelper;
 import com.example.covid19countryinfo.misc.FetchLocationTask;
@@ -52,6 +55,7 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
     private MenuItem mSearch;
     private ProgressBar mProgressBar;
     private SQLiteDatabase mDb;
+    private EmptySearchListFragment emptySearchListFragment;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -158,7 +162,19 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                mAdapter.getFilter().filter(newText);
+                mAdapter.getFilter().filter(newText, count -> {
+                    mAdapter.notifyDataSetChanged();
+                    if (mAdapter.getItemCount() < 1 && (emptySearchListFragment == null || !emptySearchListFragment.isAdded())) {
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        emptySearchListFragment = new EmptySearchListFragment();
+                        FragmentTransaction transaction = fragmentManager.beginTransaction();
+                        transaction.add(R.id.empty_search_list_fragment, emptySearchListFragment).commit();
+                    } else if (mAdapter.getItemCount() > 0 && emptySearchListFragment != null) {
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        FragmentTransaction transaction = fragmentManager.beginTransaction();
+                        transaction.remove(emptySearchListFragment).commit();
+                    }
+                });
                 return false;
             }
         });

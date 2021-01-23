@@ -18,8 +18,8 @@
         tools:layout="@layout/fragment_country_list" />
 
     <FrameLayout
-        android:id="@+id/empty_list_fragment"
-        android:name="com.example.covid19countryinfo.fragments.EmptyListFragment"
+        android:id="@+id/empty_country_list_fragment"
+        android:name="com.example.covid19countryinfo.fragments.EmptyCountryListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
@@ -27,6 +27,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout="@layout/fragment_empty_list" />
+        tools:layout="@layout/fragment_empty_country_list" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

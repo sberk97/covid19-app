@@ -1,9 +1,5 @@
 package com.example.covid19countryinfo.misc;
 
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
-import com.example.covid19countryinfo.fragments.EmptyListFragment;
 import com.example.covid19countryinfo.models.Country;
 
 import java.text.SimpleDateFormat;

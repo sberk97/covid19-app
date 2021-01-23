@@ -6,6 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".activities.SearchCountryActivity">
 
+    <FrameLayout
+        android:id="@+id/empty_search_list_fragment"
+        android:name="com.example.covid19countryinfo.fragments.EmptySearchListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/fragment_empty_search_list" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/search_country_recycler_view"
         android:layout_width="match_parent"

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal|center_vertical"
+    android:orientation="vertical"
+    tools:context=".fragments.EmptySearchListFragment">
+
+    <TextView
+        android:id="@+id/textview_empty_search_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Country is not on our list"
+        android:gravity="center_horizontal"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:drawablePadding="3dp"
+        app:drawableTopCompat="@drawable/ic_no_country" />
+
+    <TextView
+        android:id="@+id/textview_empty_search_list_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please refine your search"
+        android:gravity="center_horizontal"
+        android:textSize="14sp" />
+</LinearLayout>
