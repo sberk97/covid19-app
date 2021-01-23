@@ -21,8 +21,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ProgressBar;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -53,7 +54,7 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
     private SearchCountryListAdapter mAdapter;
     private FusedLocationProviderClient mFusedLocationClient;
     private MenuItem mSearch;
-    private ProgressBar mProgressBar;
+    private FrameLayout mProgressBarFrame;
     private SQLiteDatabase mDb;
     private EmptySearchListFragment emptySearchListFragment;
 
@@ -65,7 +66,7 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
 
         mCountryList = getCountryList();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        mProgressBar = (ProgressBar) findViewById(R.id.country_finding);
+        mProgressBarFrame = (FrameLayout) findViewById(R.id.country_finding_frame);
 
         DatabaseHelper sqLiteHelper = DatabaseHelper.getInstance(this);
         mDb = sqLiteHelper.getWritableDatabase();
@@ -89,14 +90,21 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
     @Override
     public void onCountryClick(int position) {
         hideKeyboard();
+        displayProgressBarAndBlockTouch();
 
-        mProgressBar.setVisibility(View.VISIBLE);
         String countryName = mCountryList.get(position).getCountryName();
         String countryCode = mCountryList.get(position).getCountryCode();
         getAndSaveDataForGivenCountry(countryName, countryCode, false);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        hideProgressBarAndUnlockTouch();
+    }
+
     private void onDataFetchError() {
+        hideProgressBarAndUnlockTouch();
         Toast.makeText(getApplicationContext(), R.string.data_fetch_error, Toast.LENGTH_SHORT).show();
     }
 
@@ -204,7 +212,9 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
             @Override
             public void onSuccess(Location location) {
                 if (location != null) {
-                    mProgressBar.setVisibility(View.VISIBLE);
+                    mProgressBarFrame.setVisibility(View.VISIBLE);
+                    getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                     new FetchLocationTask(SearchCountryActivity.this, SearchCountryActivity.this).execute(location);
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.no_location, Toast.LENGTH_SHORT).show();
@@ -228,7 +238,8 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
 
     @Override
     public void onLocationFetchCompleted(String result, boolean completedSuccessfully) {
-        mProgressBar.setVisibility(View.INVISIBLE);
+        hideProgressBarAndUnlockTouch();
+
         if (completedSuccessfully) {
             mSearch.expandActionView();
             SearchView searchView = (SearchView) mSearch.getActionView();
@@ -258,5 +269,16 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
     private void hideKeyboard() {
         SearchView searchView = (SearchView) mSearch.getActionView();
         searchView.clearFocus();
+    }
+
+    private void displayProgressBarAndBlockTouch() {
+        mProgressBarFrame.setVisibility(View.VISIBLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void hideProgressBarAndUnlockTouch() {
+        mProgressBarFrame.setVisibility(View.GONE);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 }
