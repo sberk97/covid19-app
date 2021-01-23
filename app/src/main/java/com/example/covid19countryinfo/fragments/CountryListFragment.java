@@ -1,6 +1,7 @@
 package com.example.covid19countryinfo.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +24,9 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.covid19countryinfo.R;
+import com.example.covid19countryinfo.activities.DetailsCountryActivity;
 import com.example.covid19countryinfo.activities.MainActivity;
+import com.example.covid19countryinfo.activities.SearchCountryActivity;
 import com.example.covid19countryinfo.adapters.SelectedCountryListAdapter;
 import com.example.covid19countryinfo.misc.Constants;
 import com.example.covid19countryinfo.misc.DatabaseHelper;
@@ -120,7 +124,10 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
 
     @Override
     public void onCountryClick(int position) {
-        // move to country activity
+        Log.d("clicked", "clicked");
+        Intent intent = new Intent(getActivity(), DetailsCountryActivity.class);
+        intent.putExtra(Constants.EXTRA_CLICKED_COUNTRY, mSelectedCountryList.get(position).getCountryCode());
+        startActivity(intent);
     }
 
     private void updateCountryInList(String countryCode, int countryListIndex) {

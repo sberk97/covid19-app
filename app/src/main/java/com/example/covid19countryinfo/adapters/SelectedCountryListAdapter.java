@@ -66,7 +66,7 @@ public class SelectedCountryListAdapter extends
         public final TextView countryRecoveredView;
         public final TextView countryLastUpdateView;
 
-        OnSelectedCountryListener OnSelectedCountryListener;
+        OnSelectedCountryListener onSelectedCountryListener;
 
         public SelectedCountryViewHolder(View itemView, OnSelectedCountryListener onSelectedCountryListener) {
             super(itemView);
@@ -76,13 +76,13 @@ public class SelectedCountryListAdapter extends
             countryRecoveredView = itemView.findViewById(R.id.selected_country_latest_recovered);
             countryLastUpdateView = itemView.findViewById(R.id.selected_country_last_update);
 
-            this.OnSelectedCountryListener = onSelectedCountryListener;
+            this.onSelectedCountryListener = onSelectedCountryListener;
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            OnSelectedCountryListener.onCountryClick(getAdapterPosition());
+            onSelectedCountryListener.onCountryClick(getAdapterPosition());
         }
 
     }

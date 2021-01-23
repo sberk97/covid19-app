@@ -22,16 +22,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activities.SearchCountryActivity"
             android:label="@string/search_country"
             android:parentActivityName=".activities.MainActivity"
-            android:theme="@style/Theme.Covid19CountryInfo.SearchActivity">
+            android:theme="@style/Theme.Covid19CountryInfo.Activity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.covid19countryinfo.activities.MainActivity" />
         </activity>
+        <activity
+            android:name=".activities.DetailsCountryActivity"
+            android:label="@string/statistics"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/Theme.Covid19CountryInfo.Activity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.covid19countryinfo.activities.MainActivity" />
+        </activity>
+
     </application>
 
 </manifest>

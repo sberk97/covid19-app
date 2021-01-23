@@ -29,4 +29,5 @@
     <string name="error_country_remove">Error during country removal</string>
     <string name="error_country_retrieve">Error during country retrieval</string>
     <string name="update_failed">Updating data failed</string>
+    <string name="statistics">Statistics</string>
 </resources>
