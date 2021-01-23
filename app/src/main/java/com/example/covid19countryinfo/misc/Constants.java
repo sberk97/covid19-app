@@ -13,7 +13,7 @@ public final class Constants {
 
     public static final String DATABASE_TABLE = "latest_country_data";
 
-    public static final int DATABASE_VERSION = 10; // 9 z rzeczami
+    public static final int DATABASE_VERSION = 11;
 
     public static final int LAUNCH_SECOND_ACTIVITY = 1;
 

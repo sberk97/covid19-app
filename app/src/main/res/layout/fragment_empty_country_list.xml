@@ -6,10 +6,10 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal|center_vertical"
     android:orientation="vertical"
-    tools:context=".fragments.EmptyListFragment">
+    tools:context=".fragments.EmptyCountryListFragment">
 
     <TextView
-        android:id="@+id/textview_empty_list"
+        android:id="@+id/textview_empty_country_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/empty_list_text"
@@ -20,7 +20,7 @@
         app:drawableTopCompat="@drawable/ic_corona_virus" />
 
     <TextView
-        android:id="@+id/textview_empty_list_add_text"
+        android:id="@+id/textview_empty_country_list_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/empty_list_add_text"
