@@ -8,7 +8,9 @@
         <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">@color/dark_green</item>
-        <item name="android:colorBackground">#414042</item>
+        <!-- Background colour -->
+        <item name="android:colorBackground">@color/dark_gray</item>
+        <!-- Card background colour -->
         <item name="cardViewStyle">@style/Theme.Covid19CountryInfo.Card</item>
     </style>
 
@@ -23,7 +25,8 @@
     </style>
 
     <style name="Theme.Covid19CountryInfo.Card" parent="Widget.MaterialComponents.CardView">
-        <item name="cardBackgroundColor">#4a4b4c</item>
+        <!-- Card background colour -->
+        <item name="cardBackgroundColor">@color/light_gray</item>
     </style>
 
 </resources>
