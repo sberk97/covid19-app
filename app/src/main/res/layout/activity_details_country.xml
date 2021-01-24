@@ -6,6 +6,182 @@
     android:layout_height="match_parent"
     tools:context=".activities.DetailsCountryActivity">
 
+    <TextView
+        android:id="@+id/details_country_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:textAppearance="?attr/textAppearanceHeadline5"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/details_country_last_update_title"
+        style="@style/selected_country_card_data"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:text="@string/last_update"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/details_country_name" />
+
+    <TextView
+        android:id="@+id/details_country_last_update"
+        style="@style/selected_country_card_number"
+        app:layout_constraintStart_toEndOf="@+id/details_country_last_update_title"
+        app:layout_constraintTop_toTopOf="@+id/details_country_last_update_title" />
+
+    <TextView
+        android:id="@+id/details_country_total_cases_title"
+        style="@style/selected_country_card_data"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/total_cases"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/details_country_last_update_title" />
+
+    <TextView
+        android:id="@+id/details_country_total_cases"
+        style="@style/selected_country_card_number"
+        app:layout_constraintStart_toEndOf="@+id/details_country_total_cases_title"
+        app:layout_constraintTop_toTopOf="@+id/details_country_total_cases_title" />
+
+    <TextView
+        android:id="@+id/details_country_total_deaths_title"
+        style="@style/selected_country_card_data"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:text="@string/total_deaths"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/details_country_total_cases_title" />
+
+    <TextView
+        android:id="@+id/details_country_total_deaths"
+        style="@style/selected_country_card_number"
+        app:layout_constraintStart_toEndOf="@+id/details_country_total_deaths_title"
+        app:layout_constraintTop_toTopOf="@+id/details_country_total_deaths_title" />
+
+    <TextView
+        android:id="@+id/details_country_total_recovered_title"
+        style="@style/selected_country_card_data"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:text="@string/total_recovered"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/details_country_total_deaths_title" />
+
+    <TextView
+        android:id="@+id/details_country_total_recovered"
+        style="@style/selected_country_card_number"
+        app:layout_constraintStart_toEndOf="@+id/details_country_total_recovered_title"
+        app:layout_constraintTop_toTopOf="@+id/details_country_total_recovered_title" />
+
+    <TextView
+        android:id="@+id/details_country_active_title"
+        style="@style/selected_country_card_data"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:text="@string/total_active"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/details_country_total_recovered_title" />
+
+    <TextView
+        android:id="@+id/details_country_active"
+        style="@style/selected_country_card_number"
+        app:layout_constraintStart_toEndOf="@+id/details_country_active_title"
+        app:layout_constraintTop_toTopOf="@+id/details_country_active_title" />
+
+    <TextView
+        android:id="@+id/details_country_today_cases_title"
+        style="@style/selected_country_card_data"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/today_cases"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/details_country_active_title" />
+
+    <TextView
+        android:id="@+id/details_country_today_cases"
+        style="@style/selected_country_card_number"
+        app:layout_constraintStart_toEndOf="@+id/details_country_today_cases_title"
+        app:layout_constraintTop_toTopOf="@+id/details_country_today_cases_title" />
+
+    <TextView
+        android:id="@+id/details_country_today_deaths_title"
+        style="@style/selected_country_card_data"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:text="@string/today_deaths"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/details_country_today_cases_title" />
+
+    <TextView
+        android:id="@+id/details_country_today_deaths"
+        style="@style/selected_country_card_number"
+        app:layout_constraintStart_toEndOf="@+id/details_country_today_deaths_title"
+        app:layout_constraintTop_toTopOf="@+id/details_country_today_deaths_title" />
+
+    <TextView
+        android:id="@+id/details_country_today_recovered_title"
+        style="@style/selected_country_card_data"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:text="@string/today_recovered"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/details_country_today_deaths_title" />
+
+    <TextView
+        android:id="@+id/details_country_today_recovered"
+        style="@style/selected_country_card_number"
+        app:layout_constraintStart_toEndOf="@+id/details_country_today_recovered_title"
+        app:layout_constraintTop_toTopOf="@+id/details_country_today_recovered_title" />
+
+    <TextView
+        android:id="@+id/details_country_critical_title"
+        style="@style/selected_country_card_data"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/critical_state"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/details_country_today_recovered_title" />
+
+    <TextView
+        android:id="@+id/details_country_critical"
+        style="@style/selected_country_card_number"
+        app:layout_constraintStart_toEndOf="@+id/details_country_critical_title"
+        app:layout_constraintTop_toTopOf="@+id/details_country_critical_title" />
+
+    <TextView
+        android:id="@+id/details_country_tests_title"
+        style="@style/selected_country_card_data"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:text="@string/total_tests"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/details_country_critical_title" />
+
+    <TextView
+        android:id="@+id/details_country_tests"
+        style="@style/selected_country_card_number"
+        app:layout_constraintStart_toEndOf="@+id/details_country_tests_title"
+        app:layout_constraintTop_toTopOf="@+id/details_country_tests_title" />
+
+    <TextView
+        android:id="@+id/details_country_population_title"
+        style="@style/selected_country_card_data"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:text="@string/country_population"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/details_country_tests_title" />
+
+    <TextView
+        android:id="@+id/details_country_population"
+        style="@style/selected_country_card_number"
+        app:layout_constraintStart_toEndOf="@+id/details_country_population_title"
+        app:layout_constraintTop_toTopOf="@+id/details_country_population_title" />
+
     <FrameLayout
         android:layout_height="match_parent"
         android:layout_width="match_parent"

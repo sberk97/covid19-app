@@ -124,9 +124,9 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
 
     @Override
     public void onCountryClick(int position) {
-        Log.d("clicked", "clicked");
         Intent intent = new Intent(getActivity(), DetailsCountryActivity.class);
-        intent.putExtra(Constants.EXTRA_CLICKED_COUNTRY, mSelectedCountryList.get(position).getCountryCode());
+        intent.putExtra(Constants.EXTRA_CLICKED_COUNTRY_CODE, mSelectedCountryList.get(position).getCountryCode());
+        intent.putExtra(Constants.EXTRA_CLICKED_COUNTRY_NAME, mSelectedCountryList.get(position).getCountryName());
         startActivity(intent);
     }
 

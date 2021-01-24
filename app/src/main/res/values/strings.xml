@@ -30,4 +30,14 @@
     <string name="error_country_retrieve">Error during country retrieval</string>
     <string name="update_failed">Updating data failed</string>
     <string name="statistics">Statistics</string>
+    <string name="total_cases">Total cases:</string>
+    <string name="total_deaths">Total deaths:</string>
+    <string name="total_recovered">Total recovered:</string>
+    <string name="total_active">Total active:</string>
+    <string name="today_cases">Today cases:</string>
+    <string name="today_deaths">Today deaths:</string>
+    <string name="today_recovered">Today recovered:</string>
+    <string name="critical_state">Critical state patients:</string>
+    <string name="total_tests">Tests performed:</string>
+    <string name="country_population">Country population:</string>
 </resources>
