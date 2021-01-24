@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.covid19countryinfo.R;
+import com.example.covid19countryinfo.misc.Helper;
 import com.example.covid19countryinfo.models.Country;
 
 import java.util.List;
@@ -42,10 +43,7 @@ public class SelectedCountryListAdapter extends
         int countryRecovered = mCountryList.get(position).getLatestRecovered();
         String countryLastUpdate = mCountryList.get(position).getLastUpdateDate();
 
-        int commaInCountryName = countryName.indexOf(',');
-        if (commaInCountryName != -1) {
-            countryName = countryName.substring(0, commaInCountryName);
-        }
+        countryName = Helper.shortenCountryName(countryName);
 
         holder.countryNameView.setText(countryName);
         holder.countryCasesView.setText(String.valueOf(countryCases));

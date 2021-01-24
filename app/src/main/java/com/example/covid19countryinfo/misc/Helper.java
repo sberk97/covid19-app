@@ -33,4 +33,12 @@ public class Helper {
         }
         return sb.toString();
     }
+
+    public static String shortenCountryName(String countryName) {
+        int commaInCountryName = countryName.indexOf(',');
+        if (commaInCountryName != -1) {
+            countryName = countryName.substring(0, commaInCountryName);
+        }
+        return countryName;
+    }
 }

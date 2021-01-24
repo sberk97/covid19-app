@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 public class DetailsCountryActivity extends AppCompatActivity {
 
+    private TextView countryNameView;
     private TextView lastUpdateView;
 
     private TextView totalCasesView;
@@ -46,8 +47,8 @@ public class DetailsCountryActivity extends AppCompatActivity {
         countryCode = getIntent().getStringExtra(Constants.EXTRA_CLICKED_COUNTRY_CODE);
         mProgressBarFrame = (FrameLayout) findViewById(R.id.country_details_loading_frame);
 
-        TextView countryNameView = findViewById(R.id.details_country_name);
-        countryNameView.setText(getIntent().getStringExtra(Constants.EXTRA_CLICKED_COUNTRY_NAME));
+
+        countryNameView = findViewById(R.id.details_country_name);
         lastUpdateView = findViewById(R.id.details_country_last_update);
 
         totalCasesView = findViewById(R.id.details_country_total_cases);
@@ -89,6 +90,8 @@ public class DetailsCountryActivity extends AppCompatActivity {
     }
 
     private void appendDataToView(JSONObject response, boolean isYesterdayData) throws JSONException {
+        String continent = response.getString("continent");
+
         int totalCases = response.getInt("cases");
         int totalDeaths = response.getInt("deaths");
         int totalRecovered = response.getInt("recovered");
@@ -112,6 +115,9 @@ public class DetailsCountryActivity extends AppCompatActivity {
         if (isYesterdayData && !hasNoCases) {
             epochDate -= 86400000;
         }
+
+        String countryAndContinent = Helper.shortenCountryName(getIntent().getStringExtra(Constants.EXTRA_CLICKED_COUNTRY_NAME)) + ", " + continent;
+        countryNameView.setText(countryAndContinent);
 
         String lastUpdate = Helper.formatDate(epochDate);
         lastUpdateView.setText(lastUpdate);
