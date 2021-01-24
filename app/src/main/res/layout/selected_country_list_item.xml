@@ -8,13 +8,11 @@
     app:cardElevation="6dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/relativeLayout"
+        android:id="@+id/card_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="8dp"
         android:paddingVertical="15dp"
-        android:clickable="true"
-        android:focusable="true"
         android:background="?attr/selectableItemBackground">
 
         <TextView
