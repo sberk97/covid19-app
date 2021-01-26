@@ -19,8 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.android.volley.Request;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.Response;
 import com.example.covid19countryinfo.R;
 import com.example.covid19countryinfo.activities.DetailsCountryActivity;
 import com.example.covid19countryinfo.activities.MainActivity;
@@ -28,8 +27,7 @@ import com.example.covid19countryinfo.adapters.SelectedCountryListAdapter;
 import com.example.covid19countryinfo.misc.Constants;
 import com.example.covid19countryinfo.misc.DatabaseHelper;
 import com.example.covid19countryinfo.misc.DatabaseOperations;
-import com.example.covid19countryinfo.misc.Helper;
-import com.example.covid19countryinfo.misc.RequestQueueSingleton;
+import com.example.covid19countryinfo.misc.NoCasesException;
 import com.example.covid19countryinfo.models.Country;
 
 import org.json.JSONException;
@@ -123,12 +121,6 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
         startActivity(intent);
     }
 
-    private void updateCountryInList(String countryCode, int countryListIndex) {
-        String sql = Constants.GET_GIVEN_COUNTRY + countryCode + "';";
-        List<Country> newCountryData = DatabaseOperations.fetchCountries(sql, getContext(), mDb);
-        mSelectedCountryList.set(countryListIndex, newCountryData.get(0));
-    }
-
     private void removeCountry(int countryClicked) {
         String countryCode = mSelectedCountryList.get(countryClicked).getCountryCode();
         try {
@@ -168,7 +160,7 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
                         removeCountry(countryClicked);
                         return true;
                     case R.id.action_update_item:
-                        updateGivenCountry(countryClicked);
+                        updateGivenCountry(mSelectedCountryList.get(countryClicked));
                         return true;
                 }
                 return true;
@@ -184,108 +176,53 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
         initiateRefresh();
     }
 
-    private void updateGivenCountry(int countryClicked) {
+    private void updateGivenCountry(Country country) {
         if (!mSwipeRefreshLayout.isRefreshing()) {
             mSwipeRefreshLayout.setRefreshing(true);
         }
 
-        new UpdateCountryTask().execute(countryClicked);
-    }
-
-    private void getDataFromApiAndUpdate(Country country, int countryListIndex, boolean getYesterdayData) {
-        String url = Constants.COUNTRY_DATA_API + country.getCountryCode();
-        if (getYesterdayData) {
-            url += "?yesterday=true";
-        }
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
-            try {
-                StringBuilder sb = getUpdateSQL(country, countryListIndex, getYesterdayData, response);
-                if (sb == null) return;
-
-                mDb.execSQL(sb.toString());
-                updateCountryInList(country.getCountryCode(), countryListIndex);
-                mAdapter.notifyDataSetChanged();
-            } catch (JSONException e) {
-                e.printStackTrace();
-                onDataFetchError();
-            } catch (SQLException e) {
-                Toast.makeText(getContext(), R.string.update_failed, Toast.LENGTH_SHORT).show();
-            }
-        }, error -> {
-            error.printStackTrace();
-            onDataFetchError();
-        });
-        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
-    }
-
-    private StringBuilder getUpdateSQL(Country country, int countryListIndex, boolean getYesterdayData, JSONObject response) throws JSONException {
-        int latestCases = response.getInt("todayCases");
-        int latestDeaths = response.getInt("todayDeaths");
-        int latestRecovered = response.getInt("todayRecovered");
-        long epochDate = response.getLong("updated");
-
-        boolean noNewCases = latestCases == 0 && latestDeaths == 0 && latestRecovered == 0;
-        boolean oldDataNoNewCases = country.getLatestCases() == 0 && country.getLatestDeaths() == 0 && country.getLatestRecovered() == 0;
-        boolean dataIsTheSame = country.getLatestCases() == latestCases && country.getLatestDeaths() == latestDeaths && country.getLatestRecovered() == latestRecovered && country.getLastUpdateDate().equals(Helper.formatDate(epochDate));
-        StringBuilder sb = new StringBuilder();
-
-        if (dataIsTheSame) {
-            return null;
-        }
-        // If today and yesterday no new cases
-        else if (noNewCases && oldDataNoNewCases) {
-            if (getYesterdayData) {
-                epochDate -= 86400000;
-                country.setLastUpdateDate(Helper.formatDate(epochDate));
-                sb.append(Constants.UPDATE_COUNTRY)
-                        .append("date='")
-                        .append(Helper.formatDate(epochDate))
-                        .append("' WHERE country_code='")
-                        .append(country.getCountryCode()).append("';");
-            } else {
-                getDataFromApiAndUpdate(country, countryListIndex, true);
-                return null;
-            }
-        }
-        // Old data has cases, new doesn't and its not yesterday data then try getting yesterday data
-        else if (noNewCases && !getYesterdayData) {
-            getDataFromApiAndUpdate(country, countryListIndex, true);
-            return null;
-        }
-        // New data has cases
-        else {
-            if (getYesterdayData) {
-                epochDate -= 86400000;
-            }
-
-            sb.append(Constants.UPDATE_COUNTRY)
-                    .append("latest_cases=")
-                    .append(latestCases)
-                    .append(", latest_deaths=")
-                    .append(latestDeaths)
-                    .append(", latest_recovered=")
-                    .append(latestRecovered)
-                    .append(", date='")
-                    .append(Helper.formatDate(epochDate))
-                    .append("' WHERE country_code='")
-                    .append(country.getCountryCode()).append("';");
-        }
-        return sb;
+        new UpdateCountryTask().execute(country);
     }
 
     private void onDataFetchError() {
         Toast.makeText(getContext(), R.string.data_fetch_error, Toast.LENGTH_SHORT).show();
     }
 
+    private Response.Listener<JSONObject> getUpdateCountryListener(Country country) {
+        return new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    boolean isNewData = country.updateObject(false, response);
+                    if (isNewData) {
+                        country.updateDataDatabase(mDb);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    onDataFetchError();
+                } catch (SQLException e) {
+                    Toast.makeText(getContext(), R.string.update_failed, Toast.LENGTH_SHORT).show();
+                } catch (NoCasesException e) {
+                    country.update(true, getContext(), this, getUpdateCountryErrorListener());
+                }
+            }
+        };
+    }
+
+    private Response.ErrorListener getUpdateCountryErrorListener() {
+        return error -> {
+            error.printStackTrace();
+            onDataFetchError();
+        };
+    }
+
     private class UpdateAllCountriesTask extends AsyncTask<Void, Void, Boolean> {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            int i = 0;
             for (Country country : mSelectedCountryList) {
-                getDataFromApiAndUpdate(country, i, false);
-                i++;
+                country.update(false, getContext(), getUpdateCountryListener(country), getUpdateCountryErrorListener());
             }
 
             return true;
@@ -294,25 +231,22 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-
             onRefreshComplete();
         }
 
     }
 
-    private class UpdateCountryTask extends AsyncTask<Integer, Void, Boolean> {
+    private class UpdateCountryTask extends AsyncTask<Country, Void, Boolean> {
 
         @Override
-        protected Boolean doInBackground(Integer... params) {
-            Country country = mSelectedCountryList.get(params[0]);
-            getDataFromApiAndUpdate(country, params[0], false);
+        protected Boolean doInBackground(Country... params) {
+            params[0].update(false, getContext(), getUpdateCountryListener(params[0]), getUpdateCountryErrorListener());
             return true;
         }
 
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-
             onRefreshComplete();
         }
 
