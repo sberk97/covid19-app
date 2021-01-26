@@ -5,6 +5,19 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.covid19countryinfo.R;
 import com.example.covid19countryinfo.fragments.CountryListFragment;
@@ -15,21 +28,6 @@ import com.example.covid19countryinfo.misc.DatabaseOperations;
 import com.example.covid19countryinfo.misc.Helper;
 import com.example.covid19countryinfo.models.Country;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
-import android.view.View;
-
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,9 +109,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
-//            if (resultCode == Activity.RESULT_CANCELED) {
-//                //Write your code if there's no result
-//            }
         }
     }
 
@@ -139,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 .append(getString(R.string.data_from))
                 .append("\n")
                 .append(Constants.COUNTRY_DATA_API_DOMAIN);
-        final SpannableString s = new SpannableString(sb.toString()); // msg should have url to enable clicking
+        final SpannableString s = new SpannableString(sb.toString());
         Linkify.addLinks(s, Linkify.ALL);
         myAlertBuilder.setMessage(s);
         myAlertBuilder.setPositiveButton(R.string.ok, null);
@@ -148,7 +143,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }

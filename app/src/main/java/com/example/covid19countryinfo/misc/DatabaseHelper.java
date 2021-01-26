@@ -4,11 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.covid19countryinfo.misc.Constants;
-
-/**
- * create custom DatabaseHelper class that extends SQLiteOpenHelper
- */
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static DatabaseHelper mInstance = null;
 
@@ -18,22 +13,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private Context mCxt;
 
     public static DatabaseHelper getInstance(Context ctx) {
-        /**
-         * use the application context as suggested by CommonsWare.
-         * this will ensure that you dont accidentally leak an Activitys
-         * context (see this article for more information:
-         * http://android-developers.blogspot.nl/2009/01/avoiding-memory-leaks.html)
-         */
+
         if (mInstance == null) {
             mInstance = new DatabaseHelper(ctx.getApplicationContext());
         }
         return mInstance;
     }
 
-    /**
-     * constructor should be private to prevent direct instantiation.
-     * make call to static factory method "getInstance()" instead.
-     */
     private DatabaseHelper(Context ctx) {
         super(ctx, Constants.DATABASE_NAME, null, Constants.DATABASE_VERSION);
         this.mCxt = ctx;
