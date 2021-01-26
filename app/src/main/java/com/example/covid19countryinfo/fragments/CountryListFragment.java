@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.example.covid19countryinfo.R;
 import com.example.covid19countryinfo.activities.DetailsCountryActivity;
 import com.example.covid19countryinfo.activities.MainActivity;
@@ -122,12 +121,6 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
         startActivity(intent);
     }
 
-    private void updateCountryInList(String countryCode, int countryListIndex) {
-        String sql = Constants.GET_GIVEN_COUNTRY + countryCode + "';";
-        List<Country> newCountryData = DatabaseOperations.fetchCountries(sql, getContext(), mDb);
-        mSelectedCountryList.set(countryListIndex, newCountryData.get(0));
-    }
-
     private void removeCountry(int countryClicked) {
         String countryCode = mSelectedCountryList.get(countryClicked).getCountryCode();
         try {
@@ -211,7 +204,7 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
                 } catch (SQLException e) {
                     Toast.makeText(getContext(), R.string.update_failed, Toast.LENGTH_SHORT).show();
                 } catch (NoCasesException e) {
-                    country.updateData(true, getContext(), this, getUpdateCountryErrorListener());
+                    country.update(true, getContext(), this, getUpdateCountryErrorListener());
                 }
             }
         };
@@ -224,13 +217,12 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
         };
     }
 
-
     private class UpdateAllCountriesTask extends AsyncTask<Void, Void, Boolean> {
 
         @Override
         protected Boolean doInBackground(Void... params) {
             for (Country country : mSelectedCountryList) {
-                country.updateData(false, getContext(), getUpdateCountryListener(country), getUpdateCountryErrorListener());
+                country.update(false, getContext(), getUpdateCountryListener(country), getUpdateCountryErrorListener());
             }
 
             return true;
@@ -248,7 +240,7 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
 
         @Override
         protected Boolean doInBackground(Country... params) {
-            params[0].updateData(false, getContext(), getUpdateCountryListener(params[0]), getUpdateCountryErrorListener());
+            params[0].update(false, getContext(), getUpdateCountryListener(params[0]), getUpdateCountryErrorListener());
             return true;
         }
 

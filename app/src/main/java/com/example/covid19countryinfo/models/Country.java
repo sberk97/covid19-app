@@ -1,15 +1,11 @@
 package com.example.covid19countryinfo.models;
 
 import android.content.Context;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.covid19countryinfo.R;
 import com.example.covid19countryinfo.misc.Constants;
 import com.example.covid19countryinfo.misc.Helper;
 import com.example.covid19countryinfo.misc.NoCasesException;
@@ -20,8 +16,6 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 
@@ -95,7 +89,7 @@ public class Country {
         this.countryCode = countryCode;
     }
 
-    public void updateData(boolean getYesterdayData, Context ctx, Response.Listener<JSONObject> responseListener, Response.ErrorListener errorListener) {
+    public void update(boolean getYesterdayData, Context ctx, Response.Listener<JSONObject> responseListener, Response.ErrorListener errorListener) {
         String url = Constants.COUNTRY_DATA_API + countryCode;
         if (getYesterdayData) {
             url += "?yesterday=true";
@@ -111,8 +105,8 @@ public class Country {
         int latestRecovered = response.getInt("todayRecovered");
         long epochDate = response.getLong("updated");
 
-        boolean noNewCases = newCasesInLatestData(latestCases, latestDeaths, latestRecovered);
-        boolean oldDataNoNewCases = newCasesInCurrentData();
+        boolean noNewCases = noNewCasesInLatestData(latestCases, latestDeaths, latestRecovered);
+        boolean oldDataNoNewCases = noNewCasesInCurrentData();
         boolean dataIsTheSame = isCurrentAndLatestDataTheSame(latestCases, latestDeaths, latestRecovered, epochDate);
 
         if (dataIsTheSame) {
@@ -163,11 +157,11 @@ public class Country {
         mDb.execSQL(sb.toString());
     }
 
-    private boolean newCasesInLatestData(int latestCases, int latestDeaths, int latestRecovered) {
+    private static boolean noNewCasesInLatestData(int latestCases, int latestDeaths, int latestRecovered) {
         return latestCases == 0 && latestDeaths == 0 && latestRecovered == 0;
     }
 
-    private boolean newCasesInCurrentData() {
+    private boolean noNewCasesInCurrentData() {
         return this.getLatestCases() == 0 && this.getLatestDeaths() == 0 && this.getLatestRecovered() == 0;
     }
 
