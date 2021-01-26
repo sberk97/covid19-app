@@ -22,10 +22,8 @@ public class EmptySearchListFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment.
         final View rootView = inflater.inflate(R.layout.fragment_empty_search_list, container, false);
 
-        // Return the View for the fragment's UI.
         return rootView;
     }
 }

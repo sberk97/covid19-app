@@ -27,7 +27,7 @@ public class FetchLocationTask extends AsyncTask<Location, Void, String> {
 
     @Override
     protected String doInBackground(Location... locations) {
-        Geocoder geocoder = new Geocoder(mContext, Locale.UK);
+        Geocoder geocoder = new Geocoder(mContext.getApplicationContext(), Locale.UK);
         Location location = locations[0];
         List<Address> addresses = new ArrayList<>();
         String resultMessage = "";
@@ -48,7 +48,7 @@ public class FetchLocationTask extends AsyncTask<Location, Void, String> {
             resultMessage = mContext.getString(R.string.no_address_found);
             Log.e(TAG, resultMessage);
         } else {
-            resultMessage = addresses.get(0).getCountryName(); //+ " " + addresses.get(0).getCountryCode();
+            resultMessage = addresses.get(0).getCountryName();
             completedSuccessfully = true;
         }
         return resultMessage;

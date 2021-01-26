@@ -1,13 +1,13 @@
 package com.example.covid19countryinfo.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -142,7 +142,7 @@ public class DetailsCountryActivity extends AppCompatActivity {
     }
 
     private void displayProgressBarAndBlockTouch() {
-        if(!mProgressBarFrame.isShown()) {
+        if (!mProgressBarFrame.isShown()) {
             mProgressBarFrame.setVisibility(View.VISIBLE);
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);

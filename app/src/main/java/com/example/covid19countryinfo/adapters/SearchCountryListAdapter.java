@@ -73,6 +73,7 @@ public class SearchCountryListAdapter extends
             results.values = filteredList;
             return results;
         }
+
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             mCountryList.clear();

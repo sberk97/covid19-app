@@ -6,14 +6,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
-import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,12 +13,17 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.covid19countryinfo.R;
 import com.example.covid19countryinfo.activities.DetailsCountryActivity;
 import com.example.covid19countryinfo.activities.MainActivity;
-import com.example.covid19countryinfo.activities.SearchCountryActivity;
 import com.example.covid19countryinfo.adapters.SelectedCountryListAdapter;
 import com.example.covid19countryinfo.misc.Constants;
 import com.example.covid19countryinfo.misc.DatabaseHelper;
@@ -107,14 +104,10 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
     }
 
     private void setUpRecyclerView(View view) {
-        // Get a handle to the RecyclerView.
         mRecyclerView = view.findViewById(R.id.main_recycler_view);
         mRecyclerView.setHasFixedSize(true);
-        // Create an adapter and supply the data to be displayed.
         mAdapter = new SelectedCountryListAdapter(getContext(), mSelectedCountryList, this);
-        // Connect the adapter with the RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
-        // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 

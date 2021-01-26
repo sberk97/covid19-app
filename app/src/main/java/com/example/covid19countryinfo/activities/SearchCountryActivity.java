@@ -1,14 +1,5 @@
 package com.example.covid19countryinfo.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -25,6 +16,15 @@ import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -71,14 +71,10 @@ public class SearchCountryActivity extends AppCompatActivity implements FetchLoc
         DatabaseHelper sqLiteHelper = DatabaseHelper.getInstance(this);
         mDb = sqLiteHelper.getWritableDatabase();
 
-        // Get a handle to the RecyclerView.
         mRecyclerView = findViewById(R.id.search_country_recycler_view);
         mRecyclerView.setHasFixedSize(true);
-        // Create an adapter and supply the data to be displayed.
         mAdapter = new SearchCountryListAdapter(this, mCountryList, this);
-        // Connect the adapter with the RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
-        // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         mRecyclerView.setOnTouchListener((v, event) -> {
