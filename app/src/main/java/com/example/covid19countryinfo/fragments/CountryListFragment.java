@@ -188,14 +188,14 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
         Toast.makeText(getContext(), R.string.data_fetch_error, Toast.LENGTH_SHORT).show();
     }
 
-    private Response.Listener<JSONObject> getUpdateCountryListener(Country country) {
+    private Response.Listener<JSONObject> getUpdateCountryListener(Country country, boolean getYesterdayData) {
         return new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    boolean isNewData = country.updateObject(false, response);
+                    boolean isNewData = country.updateObject(getYesterdayData, response, mDb);
+
                     if (isNewData) {
-                        country.updateDataDatabase(mDb);
                         mAdapter.notifyDataSetChanged();
                     }
                 } catch (JSONException e) {
@@ -204,7 +204,7 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
                 } catch (SQLException e) {
                     Toast.makeText(getContext(), R.string.update_failed, Toast.LENGTH_SHORT).show();
                 } catch (NoCasesException e) {
-                    country.update(true, getContext(), this, getUpdateCountryErrorListener());
+                    country.update(true, getContext(), getUpdateCountryListener(country, true), getUpdateCountryErrorListener());
                 }
             }
         };
@@ -222,7 +222,7 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
         @Override
         protected Boolean doInBackground(Void... params) {
             for (Country country : mSelectedCountryList) {
-                country.update(false, getContext(), getUpdateCountryListener(country), getUpdateCountryErrorListener());
+                country.update(false, getContext(), getUpdateCountryListener(country, false), getUpdateCountryErrorListener());
             }
 
             return true;
@@ -240,7 +240,7 @@ public class CountryListFragment extends Fragment implements SelectedCountryList
 
         @Override
         protected Boolean doInBackground(Country... params) {
-            params[0].update(false, getContext(), getUpdateCountryListener(params[0]), getUpdateCountryErrorListener());
+            params[0].update(false, getContext(), getUpdateCountryListener(params[0], false), getUpdateCountryErrorListener());
             return true;
         }
 
