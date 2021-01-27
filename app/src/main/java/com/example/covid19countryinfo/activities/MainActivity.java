@@ -149,8 +149,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        updateAllMenuItem = menu.findItem(R.id.action_update_all);
         if (countryListFragment == null) {
-            updateAllMenuItem = menu.findItem(R.id.action_update_all);
             updateAllMenuItem.setVisible(false);
         }
 

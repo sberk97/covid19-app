@@ -14,11 +14,6 @@ import com.example.covid19countryinfo.misc.RequestQueueSingleton;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 public class Country {
     private String countryName;
     private String countryCode;
@@ -99,11 +94,14 @@ public class Country {
         RequestQueueSingleton.getInstance(ctx).addToRequestQueue(jsonObjectRequest);
     }
 
-    public boolean updateObject(boolean getYesterdayData, JSONObject response) throws JSONException, NoCasesException {
+    public boolean updateObject(boolean getYesterdayData, JSONObject response, SQLiteDatabase mDb) throws JSONException, NoCasesException {
         int latestCases = response.getInt("todayCases");
         int latestDeaths = response.getInt("todayDeaths");
         int latestRecovered = response.getInt("todayRecovered");
         long epochDate = response.getLong("updated");
+        if (getYesterdayData) {
+            epochDate = getYesterdayDate(epochDate);
+        }
 
         boolean noNewCases = noNewCasesInLatestData(latestCases, latestDeaths, latestRecovered);
         boolean oldDataNoNewCases = noNewCasesInCurrentData();
@@ -115,7 +113,6 @@ public class Country {
         // If today and yesterday no new cases
         else if (noNewCases && oldDataNoNewCases) {
             if (getYesterdayData) {
-                epochDate = getYesterdayDate(epochDate);
                 this.setLastUpdateDate(Helper.formatDate(epochDate));
             } else {
                 throw new NoCasesException("Latest data does not have new cases");
@@ -127,20 +124,18 @@ public class Country {
         }
         // New data has cases
         else {
-            if (getYesterdayData) {
-                epochDate = getYesterdayDate(epochDate);
-            }
-
             this.setLatestCases(latestCases);
             this.setLatestDeaths(latestDeaths);
             this.setLatestRecovered(latestRecovered);
             this.setLastUpdateDate(Helper.formatDate(epochDate));
+
+            this.updateDataDatabase(mDb);
         }
 
         return true;
     }
 
-    public void updateDataDatabase(SQLiteDatabase mDb) {
+    private void updateDataDatabase(SQLiteDatabase mDb) {
         StringBuilder sb = new StringBuilder();
         sb.append(Constants.UPDATE_COUNTRY)
                 .append("latest_cases=")
@@ -150,7 +145,7 @@ public class Country {
                 .append(", latest_recovered=")
                 .append(latestRecovered)
                 .append(", date='")
-                .append(dateToEpoch())
+                .append(lastUpdateDate)
                 .append("' WHERE country_code='")
                 .append(countryCode).append("';");
 
@@ -171,17 +166,5 @@ public class Country {
 
     private long getYesterdayDate(long epochDate) {
         return epochDate - 86400000;
-    }
-
-    private long dateToEpoch() {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
-            Date date = sdf.parse(lastUpdateDate);
-            return date.getTime();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        return 0;
     }
 }
