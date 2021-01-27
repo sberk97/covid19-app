@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,7 +37,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private SQLiteDatabase mDb;
     private CountryListFragment countryListFragment;
-    private MenuItem updateAllMenuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         if (countryListFragment != null) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.remove(countryListFragment).commit();
-            updateAllMenuItem.setVisible(false);
+            invalidateOptionsMenu();
         }
     }
 
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         if (fragment != null) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.remove(fragment).commit();
-            updateAllMenuItem.setVisible(true);
+            invalidateOptionsMenu();
         }
     }
 
@@ -149,8 +149,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        updateAllMenuItem = menu.findItem(R.id.action_update_all);
-        if (countryListFragment == null) {
+        if (countryListFragment == null || !countryListFragment.isVisible()) {
+            MenuItem updateAllMenuItem = menu.findItem(R.id.action_update_all);
             updateAllMenuItem.setVisible(false);
         }
 
